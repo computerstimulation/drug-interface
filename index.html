@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your website description here">
+    <meta name="keywords" content="your, keywords, here">
+    <meta name="author" content="Your Name">
+    <title>Drug Sales</title>
+    <!-- install Supabase JavaScript Client Library via cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- end install Supabase JavaScript Client Library via cdn -->
+</head>
+
+<body>
+    <section id="searchSection">
+        <form id="searchForm">
+            <label for="searchInput">Search for a drug:</label>
+            <input type="text" id="searchInput" list="suggestions">
+            <button type="submit" id="searchButton">Search</button>
+        </form>
+
+        <datalist id="suggestions">
+            <option value="Panadol">
+            <option value="Doliprane">
+            <option value="Fervex">
+        </datalist>
+    </section>
+
+    <section id="filterSection">
+        <label for="filterSelect">Filter by Supplier:</label>
+        <select id="filterSelect">
+            <option value="">All</option>
+            <option value="Supplier 1">Supplier 1</option>
+            <option value="Supplier 2">Supplier 2</option>
+            <option value="Supplier 3">Supplier 3</option>
+            <!-- Add more options based on your actual suppliers -->
+        </select>
+    </section>
+
+    <section id="resultsSection">
+        <h2>Search Results:</h2>
+        <div id="results"></div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async (event) => {
+            const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            const searchForm = document.getElementById('searchForm');
+            const filterSelect = document.getElementById('filterSelect');
+            const resultsDiv = document.getElementById('results');
+
+            // Function to fetch and display drugs based on search and filter
+            async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
+                let query = supabaseClient
+                    .from('drug_table')
+                    .select('drug_name_column, drug_supplier_column');
+
+                if (searchInput) {
+                    query = query.ilike('drug_name_column', `%${searchInput}%`);
+                }
+
+                if (supplierFilter) {
+                    query = query.eq('drug_supplier_column', supplierFilter);
+                }
+
+                const { data, error } = await query;
+
+                if (error) {
+                    console.error('Error fetching data:', error);
+                    resultsDiv.innerText = 'Error fetching data.';
+                    return;
+                }
+
+                resultsDiv.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(drug => {
+                        const drugDiv = document.createElement('div');
+                        drugDiv.innerText = `${drug.drug_name_column} - Supplier: ${drug.drug_supplier_column}`;
+                        resultsDiv.appendChild(drugDiv);
+                    });
+                } else {
+                    resultsDiv.innerText = 'No results found.';
+                }
+            }
+
+            // Event listener for search form submission
+            searchForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const searchInput = document.getElementById('searchInput').value;
+                const supplierFilter = filterSelect.value;
+
+                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+            });
+
+            // Event listener for filter selection change
+            filterSelect.addEventListener('change', async function () {
+                const searchInput = document.getElementById('searchInput').value;
+                const supplierFilter = filterSelect.value;
+
+                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+            });
+
+            // Initial fetch and display of all drugs
+            await fetchAndDisplayDrugs('', ''); // Initial load with no search or filter
+        });
+    </script>
+</body>
+
+</html>

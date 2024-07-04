@@ -4,57 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Find and purchase various drugs from different suppliers.">
-    <meta name="keywords" content="drug sales, buy drugs, drug suppliers, pharmaceutical">
+    <meta name="description" content="Your website description here">
+    <meta name="keywords" content="your, keywords, here">
     <meta name="author" content="Your Name">
     <title>Drug Sales</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Supabase JavaScript Client Library via CDN -->
+    <!-- install Supabase JavaScript Client Library via cdn -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- end install Supabase JavaScript Client Library via cdn -->
 </head>
 
 <body>
-    <header>
-        <h1>Drug Sales</h1>
-    </header>
+    <section id="searchSection">
+        <form id="searchForm">
+            <label for="searchInput">Search for a drug:</label>
+            <input type="text" id="searchInput" list="suggestions">
+            <button type="submit" id="searchButton">Search</button>
+        </form>
 
-    <main>
-        <section id="searchSection">
-            <form id="searchForm" aria-labelledby="searchLabel">
-                <label for="searchInput" id="searchLabel">Search for a drug:</label>
-                <input type="text" id="searchInput" list="suggestions" aria-describedby="searchHelp" />
-                <button type="submit" id="searchButton">Search</button>
-                <datalist id="suggestions">
-                    <option value="Panadol"></option>
-                    <option value="Doliprane"></option>
-                    <option value="Fervex"></option>
-                </datalist>
-            </form>
-        </section>
+        <datalist id="suggestions">
+            <option value="Panadol">
+            <option value="Doliprane">
+            <option value="Fervex">
+        </datalist>
+    </section>
 
-        <section id="filterSection">
-            <label for="filterSelect">Filter by Supplier:</label>
-            <select id="filterSelect">
-                <option value="">All</option>
-                <option value="Supplier 1">Supplier 1</option>
-                <option value="Supplier 2">Supplier 2</option>
-                <option value="Supplier 3">Supplier 3</option>
-                <!-- Add more options based on your actual suppliers -->
-            </select>
-        </section>
+    <section id="filterSection">
+        <label for="filterSelect">Filter by Supplier:</label>
+        <select id="filterSelect">
+            <option value="">All</option>
+            <option value="Supplier 1">Supplier 1</option>
+            <option value="Supplier 2">Supplier 2</option>
+            <option value="Supplier 3">Supplier 3</option>
+            <!-- Add more options based on your actual suppliers -->
+        </select>
+    </section>
 
-        <section id="resultsSection">
-            <h2>Search Results:</h2>
-            <div id="results" aria-live="polite"></div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Your Name. All rights reserved.</p>
-    </footer>
+    <section id="resultsSection">
+        <h2>Search Results:</h2>
+        <div id="results"></div>
+    </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', async (event) => {
             const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
             const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
             const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -63,6 +54,7 @@
             const filterSelect = document.getElementById('filterSelect');
             const resultsDiv = document.getElementById('results');
 
+            // Function to fetch and display drugs based on search and filter
             async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
                 let query = supabaseClient
                     .from('drug_table')
@@ -96,20 +88,25 @@
                 }
             }
 
-            searchForm.addEventListener('submit', async (event) => {
+            // Event listener for search form submission
+            searchForm.addEventListener('submit', async function (event) {
                 event.preventDefault();
                 const searchInput = document.getElementById('searchInput').value;
                 const supplierFilter = filterSelect.value;
+
                 await fetchAndDisplayDrugs(searchInput, supplierFilter);
             });
 
-            filterSelect.addEventListener('change', async () => {
+            // Event listener for filter selection change
+            filterSelect.addEventListener('change', async function () {
                 const searchInput = document.getElementById('searchInput').value;
                 const supplierFilter = filterSelect.value;
+
                 await fetchAndDisplayDrugs(searchInput, supplierFilter);
             });
 
-            await fetchAndDisplayDrugs('', '');
+            // Initial fetch and display of all drugs
+            await fetchAndDisplayDrugs('', ''); // Initial load with no search or filter
         });
     </script>
 </body>

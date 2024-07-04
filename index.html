@@ -4,20 +4,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your website description here">
-    <meta name="keywords" content="your, keywords, here">
+    <meta name="description" content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
+    <meta name="keywords" content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
     <meta name="author" content="Your Name">
-    <title>Drug Sales</title>
+    <title>Pharmacy Supplier Connection</title>
     <!-- install Supabase JavaScript Client Library via cdn -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- end install Supabase JavaScript Client Library via cdn -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F4E2D1; /* Sand color */
+            color: #3E2723; /* Dark brown for text */
+        }
+
+        header {
+            background: linear-gradient(90deg, #005b96, #00a651); /* Blue and green gradient */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        #searchSection, #filterSection, #resultsSection {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        label {
+            flex: 1 1 100%;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], select, button {
+            flex: 1 1 calc(50% - 10px);
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #005b96; /* Blue button */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #004080; /* Darker blue for hover effect */
+        }
+
+        @media (max-width: 600px) {
+            input[type="text"], select, button {
+                flex: 1 1 100%;
+            }
+        }
+
+        #results div {
+            padding: 20px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #FFF5E1; /* Lighter sandy background for result items */
+            transform: scale(1); /* Slight scale up on hover */
+            transition: transform 0.3s, border-color 0.3s, background-color 0.3s;
+        }
+
+        /* Hover effects only for devices with a mouse */
+        @media (hover: hover) and (pointer: fine) {
+            #results div:hover {
+                transform: scale(1.00); /* Slight scale up on hover */
+                border-color: #005b96; /* Change border color on hover */
+                background-color: #e0f7fa; /* Light blue background on hover */
+            }
+        }
+
+        .product-name {
+            font-weight: bold;
+        }
+
+        .supplier-name {
+            color: #005b96; /* Blue color for supplier name */
+            font-style: italic;
+        }
+
+        .no-supplier {
+            opacity: 0.5; /* Less opacity for drugs with no supplier */
+            color: gray; /* Gray color for text */
+        }
+    </style>
 </head>
 
 <body>
+    <header>
+        <h1>Pharmacy Supplier Connection</h1>
+    </header>
+
     <section id="searchSection">
         <form id="searchForm">
-            <label for="searchInput">Search for a drug:</label>
-            <input type="text" id="searchInput" list="suggestions">
+            <input type="text" id="searchInput" list="suggestions" placeholder="">
             <button type="submit" id="searchButton">Search</button>
         </form>
 
@@ -35,12 +135,11 @@
             <option value="Supplier 1">Supplier 1</option>
             <option value="Supplier 2">Supplier 2</option>
             <option value="Supplier 3">Supplier 3</option>
-            <!-- Add more options based on your actual suppliers -->
         </select>
     </section>
 
     <section id="resultsSection">
-        <h2>Search Results:</h2>
+        <h2>PRODUCTS</h2>
         <div id="results"></div>
     </section>
 
@@ -80,7 +179,12 @@
                 if (data.length > 0) {
                     data.forEach(drug => {
                         const drugDiv = document.createElement('div');
-                        drugDiv.innerText = `${drug.drug_name_column} - Supplier: ${drug.drug_supplier_column}`;
+                        if (drug.drug_supplier_column) {
+                            drugDiv.innerHTML = `<span class="product-name">${drug.drug_name_column}</span> <span class="supplier-name">from ${drug.drug_supplier_column}</span>`;
+                        } else {
+                            drugDiv.innerHTML = `<span class="product-name">${drug.drug_name_column}</span> <span class="supplier-name">Unavailable</span>`;
+                            drugDiv.classList.add('no-supplier');
+                        }
                         resultsDiv.appendChild(drugDiv);
                     });
                 } else {

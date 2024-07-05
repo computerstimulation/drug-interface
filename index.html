@@ -76,6 +76,8 @@
         }
 
         #results div {
+            display: flex;
+            align-items: center;
             padding: 20px;
             margin: 10px 0;
             border: 1px solid #ccc;
@@ -96,16 +98,29 @@
 
         .product-name {
             font-weight: bold;
+            margin-left: 10px;
         }
 
         .supplier-name {
             color: #005b96; /* Blue color for supplier name */
             font-style: italic;
+            margin-left: auto;
         }
 
         .no-supplier {
             opacity: 0.5; /* Less opacity for drugs with no supplier */
             color: gray; /* Gray color for text */
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .placeholder {
+            visibility: hidden;
         }
     </style>
 </head>
@@ -117,7 +132,7 @@
 
     <section id="searchSection">
         <form id="searchForm">
-            <input type="search" id="searchInput" list="suggestions" placeholder="" autoCorrect="off" spellCheck="{false}" autocomplete="off">
+            <input type="search" id="searchInput" list="suggestions" placeholder="" autoCorrect="off" spellCheck="false" autocomplete="off">
             <button type="submit" id="searchButton">Search</button>
         </form>
 
@@ -157,7 +172,7 @@
             async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
                 let query = supabaseClient
                     .from('drug_table')
-                    .select('drug_name_column, drug_supplier_column');
+                    .select('drug_name_column, drug_supplier_column, drug_image_url_column');
 
                 if (searchInput) {
                     query = query.ilike('drug_name_column', `%${searchInput}%`);
@@ -179,10 +194,16 @@
                 if (data.length > 0) {
                     data.forEach(drug => {
                         const drugDiv = document.createElement('div');
+                        const imageUrl = drug.drug_image_url_column || '';
+                        const imgClass = imageUrl ? 'product-image' : 'product-image placeholder';
                         if (drug.drug_supplier_column) {
-                            drugDiv.innerHTML = `<span class="product-name">${drug.drug_name_column}</span> <span class="supplier-name">from ${drug.drug_supplier_column}</span>`;
+                            drugDiv.innerHTML = `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
+                                                 <span class="product-name">${drug.drug_name_column}</span>
+                                                 <span class="supplier-name">from ${drug.drug_supplier_column}</span>`;
                         } else {
-                            drugDiv.innerHTML = `<span class="product-name">${drug.drug_name_column}</span> <span class="supplier-name">Unavailable</span>`;
+                            drugDiv.innerHTML = `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
+                                                 <span class="product-name">${drug.drug_name_column}</span>
+                                                 <span class="supplier-name">Unavailable</span>`;
                             drugDiv.classList.add('no-supplier');
                         }
                         resultsDiv.appendChild(drugDiv);

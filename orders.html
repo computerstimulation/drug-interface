@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F4E2D1; /* Match background color from index.html */
+            color: #3E2723; /* Match text color from index.html */
+        }
+
+        header {
+            background: linear-gradient(90deg, #005b96, #00a651);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px; /* Match max-width from index.html */
+            margin: 0 auto; /* Center content horizontally */
+        }
+
+        section {
+            margin-bottom: 20px;
+            background-color: #FFF5E1; /* Match background color from index.html */
+            padding: 15px;
+            border-radius: 8px; /* Match border-radius from index.html */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px; /* Match border-radius from index.html */
+            background-color: #ffffff; /* Match background-color from index.html */
+        }
+
+        .order h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #005b96; /* Match link color from index.html */
+        }
+
+        .order p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supplier Orders</h1>
+    </header>
+    <main>
+        <section id="orders">
+            <!-- Orders will be dynamically inserted here -->
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Simulated data (replace with actual data retrieval)
+            const ordersData = [
+                { id: 1, customer: 'Customer A', product: 'Product X', quantity: 5, deliveryAddress: '123 Main St' },
+                { id: 2, customer: 'Customer B', product: 'Product Y', quantity: 3, deliveryAddress: '456 Elm St' }
+                // Add more orders as needed
+            ];
+
+            const ordersSection = document.getElementById('orders');
+
+            // Display orders
+            ordersData.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.classList.add('order');
+                orderDiv.innerHTML = `
+                    <h2>Order #${order.id}</h2>
+                    <p><strong>Customer:</strong> ${order.customer}</p>
+                    <p><strong>Product:</strong> ${order.product}</p>
+                    <p><strong>Quantity:</strong> ${order.quantity}</p>
+                    <p><strong>Delivery Address:</strong> ${order.deliveryAddress}</p>
+                `;
+                ordersSection.appendChild(orderDiv);
+            });
+        });
+    </script>
+</body>
+</html>

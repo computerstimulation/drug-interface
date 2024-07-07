@@ -160,26 +160,6 @@
             }
         }
     </style>
-</head>
-
-<body>
-    <div class="container">
-        <div class="product-page">
-            <img src="path/to/product-image.jpg" alt="Product Name" class="product-image">
-            <div class="product-details">
-                <h1 class="product-title">Product Name</h1>
-                <p class="product-description">This is a brief description of the product. It includes essential
-                    information and key benefits.</p>
-                <p class="product-price">$XX.XX</p>
-                <div class="quantity-selector">
-                    <input type="number" class="quantity-input" value="1" min="1">
-                    <span>Qty</span>
-                </div>
-                <a href="#" class="add-to-cart">Add to Cart</a>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async (event) => {
@@ -201,17 +181,43 @@
 
                     if (error) throw error;
 
+                    // Update DOM with fetched data
                     document.querySelector('.product-title').textContent = data.drug_name_column;
                     document.querySelector('.product-description').textContent = `Supplied by: ${data.drug_supplier_column}`;
                     document.querySelector('.product-image').src = data.drug_image_url_column;
                     document.querySelector('.product-image').alt = data.drug_name_column;
                     document.querySelector('.product-price').textContent = `$${data.price}`;
+
+                    // Show the product details section after data is fetched
+                    document.querySelector('.product-page').style.display = 'flex'; // or 'block' based on your layout
                 } catch (error) {
                     console.error('Error fetching product data:', error);
                 }
             }
         });
+
     </script>
+</head>
+
+<body>
+    <div class="product-page" style="display: none;">
+        <div class="container">
+            <div class="product-page">
+                <img src="path/to/product-image.jpg" alt="Product Name" class="product-image">
+                <div class="product-details">
+                    <h1 class="product-title"></h1>
+                    <p class="product-description">Supplied by:</p>
+                    <p class="product-price"></p>
+                    <div class="quantity-selector">
+                        <input type="number" class="quantity-input" value="1" min="1">
+                        <span>Qty</span>
+                    </div>
+                    <a href="#" class="add-to-cart">Add to Cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

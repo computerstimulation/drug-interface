@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
-    <meta name="keywords" content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
+    <meta name="description"
+        content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
+    <meta name="keywords"
+        content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
     <meta name="author" content="Your Name">
     <title>Pharmacy Supplier Connection</title>
     <!-- install Supabase JavaScript Client Library via cdn -->
@@ -16,18 +18,23 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #F4E2D1; /* Sand color */
-            color: #3E2723; /* Dark brown for text */
+            background-color: #F4E2D1;
+            /* Sand color */
+            color: #3E2723;
+            /* Dark brown for text */
         }
 
         header {
-            background: linear-gradient(90deg, #005b96, #00a651); /* Blue and green gradient */
+            background: linear-gradient(90deg, #005b96, #00a651);
+            /* Blue and green gradient */
             color: white;
             padding: 1rem;
             text-align: center;
         }
 
-        #searchSection, #filterSection, #resultsSection {
+        #searchSection,
+        #filterSection,
+        #resultsSection {
             margin: 20px auto;
             max-width: 800px;
             padding: 20px;
@@ -48,7 +55,10 @@
             font-weight: bold;
         }
 
-        input[type="text"], input[type="search"], select, button {
+        input[type="text"],
+        input[type="search"],
+        select,
+        button {
             flex: 1 1 calc(50% - 10px);
             padding: 10px;
             margin: 5px;
@@ -58,7 +68,8 @@
         }
 
         button {
-            background-color: #005b96; /* Blue button */
+            background-color: #005b96;
+            /* Blue button */
             color: white;
             border: none;
             cursor: pointer;
@@ -66,11 +77,15 @@
         }
 
         button:hover {
-            background-color: #004080; /* Darker blue for hover effect */
+            background-color: #004080;
+            /* Darker blue for hover effect */
         }
 
         @media (max-width: 600px) {
-            input[type="text"], select, button {
+
+            input[type="text"],
+            select,
+            button {
                 flex: 1 1 100%;
             }
         }
@@ -82,17 +97,20 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
-            background: #FFF5E1; /* Lighter sandy background for result items */
-            transform: scale(1); /* Slight scale up on hover */
-            transition: transform 0.3s, border-color 0.3s, background-color 0.3s;
+            background: #FFF5E1;
+            /* Lighter sandy background for result items */
+            cursor: pointer;
+            /* Indicate the div is clickable */
+            transition: border-color 0.3s, background-color 0.3s;
         }
 
         /* Hover effects only for devices with a mouse */
         @media (hover: hover) and (pointer: fine) {
             #results div:hover {
-                transform: scale(1.00); /* Slight scale up on hover */
-                border-color: #005b96; /* Change border color on hover */
-                background-color: #e0f7fa; /* Light blue background on hover */
+                border-color: #005b96;
+                /* Change border color on hover */
+                background-color: #e0f7fa;
+                /* Light blue background on hover */
             }
         }
 
@@ -102,14 +120,17 @@
         }
 
         .supplier-name {
-            color: #005b96; /* Blue color for supplier name */
+            color: #005b96;
+            /* Blue color for supplier name */
             font-style: italic;
             margin-left: auto;
         }
 
         .no-supplier {
-            opacity: 0.5; /* Less opacity for drugs with no supplier */
-            color: gray; /* Gray color for text */
+            opacity: 0.5;
+            /* Less opacity for drugs with no supplier */
+            color: gray;
+            /* Gray color for text */
         }
 
         .product-image {
@@ -132,7 +153,8 @@
 
     <section id="searchSection">
         <form id="searchForm">
-            <input type="search" id="searchInput" list="suggestions" placeholder="" autoCorrect="off" spellCheck="false" autocomplete="off">
+            <input type="search" id="searchInput" list="suggestions" placeholder="Search for drugs..." autoCorrect="off"
+                spellCheck="false" autocomplete="off">
             <button type="submit" id="searchButton">Search</button>
         </form>
 
@@ -172,7 +194,7 @@
             async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
                 let query = supabaseClient
                     .from('drug_table')
-                    .select('drug_name_column, drug_supplier_column, drug_image_url_column');
+                    .select('id, drug_name_column, drug_supplier_column, drug_image_url_column');
 
                 if (searchInput) {
                     query = query.ilike('drug_name_column', `%${searchInput}%`);
@@ -196,16 +218,16 @@
                         const drugDiv = document.createElement('div');
                         const imageUrl = drug.drug_image_url_column || '';
                         const imgClass = imageUrl ? 'product-image' : 'product-image placeholder';
-                        if (drug.drug_supplier_column) {
-                            drugDiv.innerHTML = `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
-                                                 <span class="product-name">${drug.drug_name_column}</span>
-                                                 <span class="supplier-name">from ${drug.drug_supplier_column}</span>`;
-                        } else {
-                            drugDiv.innerHTML = `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
-                                                 <span class="product-name">${drug.drug_name_column}</span>
-                                                 <span class="supplier-name">Unavailable</span>`;
-                            drugDiv.classList.add('no-supplier');
-                        }
+                        const supplierText = drug.drug_supplier_column ? `from ${drug.drug_supplier_column}` : 'Unavailable';
+                        const supplierClass = drug.drug_supplier_column ? 'supplier-name' : 'supplier-name no-supplier';
+                        drugDiv.innerHTML = `
+                            <img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
+                            <span class="product-name">${drug.drug_name_column}</span>
+                            <span class="${supplierClass}">${supplierText}</span>
+                        `;
+                        drugDiv.addEventListener('click', () => {
+                            window.location.href = `product-page.html?product_id=${drug.id}`;
+                        });
                         resultsDiv.appendChild(drugDiv);
                     });
                 } else {
@@ -230,10 +252,10 @@
                 await fetchAndDisplayDrugs(searchInput, supplierFilter);
             });
 
-            // Initial fetch and display of all drugs
-            await fetchAndDisplayDrugs('', ''); // Initial load with no search or filter
+            // Initial load of all drugs
+            await fetchAndDisplayDrugs();
         });
     </script>
 </body>
 
-</html>
+</html

@@ -189,13 +189,12 @@
                     document.querySelector('.product-price').textContent = `$${data.price}`;
 
                     // Show the product details section after data is fetched
-                    document.querySelector('.product-page').style.display = 'flex'; // or 'block' based on your layout
+                    document.querySelector('.product-page').style.display = 'block'; // or 'block' based on your layout
                 } catch (error) {
                     console.error('Error fetching product data:', error);
                 }
             }
         });
-
     </script>
 </head>
 

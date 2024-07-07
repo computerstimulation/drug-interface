@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
+    <meta name="keywords"
+        content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
+    <title>Supplier Drug Table</title>
+    <!-- Install Supabase JavaScript Client Library via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- End Install Supabase JavaScript Client Library via CDN -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F4E2D1;
+            /* Sand color */
+            color: #3E2723;
+            /* Dark brown for text */
+            font-size: 16px;
+        }
+
+        input {
+            font-size: 1rem;
+        }
+
+        header {
+            background: linear-gradient(90deg, #005b96, #00a651);
+            /* Blue and green gradient */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+            /* Ensures equal cell width */
+        }
+
+        tr {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        th,
+        td {
+            border: none;
+            text-align: left;
+            background-color: #FFF5E1;
+            padding: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        th {
+            background-color: #005b96;
+            /* Blue header */
+            color: white;
+            font-weight: normal;
+            padding: 1rem;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        form input,
+        form select,
+        form button {
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0;
+            /* Adjusted border radius */
+            width: 100%;
+            box-sizing: border-box;
+            /* Ensure padding is included in width */
+            outline: none;
+            /* Remove default focus outline */
+            transition: border-color 0.3s, box-shadow 0.3s;
+            /* Transition for visual effect */
+            padding: 1rem;
+        }
+
+        input[type=checkbox] {
+            width: 80%;
+            height: 80%;
+            margin: auto;
+            padding: 0;
+            cursor: pointer;
+            appearance: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type=checkbox]:checked {
+            background-color: black;
+        }
+
+        form input:focus,
+        form select:focus,
+        form button:focus {
+            border-color: #005b96;
+            /* Blue border on focus */
+            box-shadow: inset 0 0 5px rgba(0, 123, 255, 0.5);
+            /* Light blue shadow on focus */
+        }
+
+        form button {
+            background-color: #005b96;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 10px 20px;
+            /* Larger padding for button */
+            margin-left: 10px;
+            /* Add margin between buttons */
+        }
+
+        form button:hover {
+            background-color: #004080;
+        }
+
+        .checkbox-cell {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 0;
+            border: 1px solid #ccc;
+            padding: 0;
+            flex-shrink: 1;
+        }
+
+        .file-upload {
+            margin-top: 20px;
+        }
+
+        .table-action-buttons-section {
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .table-action-buttons-section button {
+            background-color: #00a651;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 10px 20px;
+            /* Larger padding for button */
+            margin-left: 10px;
+            /* Add margin between buttons */
+            font-size: 1rem;
+        }
+
+        @media (max-width: 600px) {
+
+            form input,
+            form select,
+            form button {
+                width: 100%;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Supplier Drug Table</h1>
+    </header>
+
+    <section id="resultsSection">
+        <h2>PRODUCTS</h2>
+        <form id="updateForm">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell"><input type="checkbox" id="selectAll"></th>
+                        <th>Product</th>
+                        <th>Supplier</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <!-- Table rows will be dynamically populated here -->
+                </tbody>
+            </table>
+        </form>
+        <section class="table-action-buttons-section">
+            <div><button id="deleteRowButton">Delete rows</button></div>
+            <input type="number" id="numRowsToAdd" placeholder="Number of rows to add" min="1">
+            <button id="addRowButton">Add rows</button>
+
+            <!-- File upload section -->
+            <div class="file-upload">
+                <input type="file" id="csvFileInput" accept=".csv">
+                <button id="uploadCSVButton">Upload CSV</button>
+            </div>
+        </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+                const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+                const resultsBody = document.getElementById('resultsBody');
+                const addRowButton = document.getElementById('addRowButton');
+                const deleteRowButton = document.getElementById('deleteRowButton');
+                const selectAllCheckbox = document.getElementById('selectAll');
+                const numRowsToAddInput = document.getElementById('numRowsToAdd');
+                const csvFileInput = document.getElementById('csvFileInput');
+                const uploadCSVButton = document.getElementById('uploadCSVButton');
+
+                // Function to fetch and display drugs in the table
+                async function fetchAndDisplayDrugs() {
+                    const { data, error } = await supabaseClient
+                        .from('drug_table')
+                        .select('id, drug_name_column, drug_supplier_column, drug_image_url_column');
+
+                    if (error) {
+                        console.error('Error fetching data:', error);
+                        return;
+                    }
+
+                    resultsBody.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(drug => {
+                            const imageUrl = drug.drug_image_url_column || '';
+                            const imageCell = imageUrl
+                                ? `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="product-image">`
+                                : '';
+
+                            const row = `
+                                <tr>
+                                    <td class="checkbox-cell"><input type="checkbox" class="row-checkbox" data-drug-id="${drug.id}"></td>
+                                    <td><input type="text" class="drug-name" data-drug-id="${drug.id}" value="${drug.drug_name_column}"></td>
+                                    <td><input type="text" class="drug-supplier" data-drug-id="${drug.id}" value="${drug.drug_supplier_column}"></td>
+                                    <td><input type="url" class="drug-image" data-drug-id="${drug.id}" value="${imageUrl}"></td>
+                                </tr>
+                            `;
+                            resultsBody.innerHTML += row;
+                        });
+
+                        // Attach event listeners to inputs and checkboxes
+                        attachInputListeners();
+                        attachCheckboxListeners();
+                    } else {
+                        const noResultsRow = `
+                            <tr>
+                                <td colspan="4">No drugs found.</td>
+                            </tr>
+                        `;
+                        resultsBody.innerHTML = noResultsRow;
+                    }
+                }
+
+                // Function to attach input event listeners
+                function attachInputListeners() {
+                    const inputs = document.querySelectorAll('.drug-name, .drug-supplier, .drug-image');
+                    inputs.forEach(input => {
+                        input.addEventListener('change', handleInputChange); // Use 'change' event to detect when the input value changes
+                    });
+                }
+
+                // Function to attach checkbox event listeners
+                function attachCheckboxListeners() {
+                    const checkboxes = document.querySelectorAll('.row-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', updateDeleteButtonLabel);
+                    });
+                }
+
+                // Event handler for input changes
+                async function handleInputChange(event) {
+                    const input = event.target;
+                    const drugId = input.getAttribute('data-drug-id');
+                    const fieldName = input.classList.contains('drug-name') ? 'drug_name_column' :
+                        input.classList.contains('drug-supplier') ? 'drug_supplier_column' :
+                            input.classList.contains('drug-image') ? 'drug_image_url_column' : '';
+
+                    if (!drugId || !fieldName) return;
+
+                    const updateField = { [fieldName]: input.value };
+
+                    // Update the specific drug record in the database
+                    const { data: updatedData, error: updateError } = await supabaseClient
+                        .from('drug_table')
+                        .update(updateField)
+                        .eq('id', parseInt(drugId));
+
+                    if (updateError) {
+                        console.error(`Error updating ${fieldName} for drug ${drugId}:`, updateError.message);
+                        alert(`Failed to update ${fieldName}. Please try again.`);
+                    } else {
+                        console.log(`${fieldName} updated successfully for drug ${drugId}`);
+                        // Optionally handle success (e.g., visual confirmation)
+                    }
+                }
+
+                // Function to generate a unique name for the new row
+                function generateUniqueName(existingNames) {
+                    let counter = 1;
+                    let newName;
+                    do {
+                        newName = `New Drug ${counter}`;
+                        counter++;
+                    } while (existingNames.includes(newName));
+                    return newName;
+                }
+
+                // Event listener for adding new rows
+                addRowButton.addEventListener('click', async () => {
+                    const numRowsToAdd = parseInt(numRowsToAddInput.value);
+
+                    if (isNaN(numRowsToAdd) || numRowsToAdd <= 0) {
+                        alert("Please enter a valid number of rows.");
+                        return;
+                    }
+
+                    // Fetch existing drug names to ensure uniqueness
+                    const { data: existingData, error: fetchError } = await supabaseClient
+                        .from('drug_table')
+                        .select('drug_name_column');
+
+                    if (fetchError) {
+                        console.error('Error fetching existing drug names:', fetchError.message);
+                        return;
+                    }
+
+                    const existingNames = existingData.map(drug => drug.drug_name_column);
+                    const newRows = [];
+
+                    for (let i = 0; i < numRowsToAdd; i++) {
+                        const newDrugName = generateUniqueName(existingNames);
+                        existingNames.push(newDrugName);
+                        newRows.push({ drug_name_column: newDrugName, drug_supplier_column: '', drug_image_url_column: '' });
+                    }
+
+                    // Insert new rows into the Supabase database
+                    const { data, error } = await supabaseClient
+                        .from('drug_table')
+                        .insert(newRows)
+                        .select();
+
+                    if (error) {
+                        console.error('Error inserting new rows:', error.message);
+                        alert('Failed to add new rows. Please try again.');
+                        return;
+                    }
+
+                    // Fetch and display the updated list of drugs, including the new rows
+                    await fetchAndDisplayDrugs();
+
+                    // Optionally scroll to the new row or focus it for immediate editing
+                    if (data.length > 0) {
+                        const newRow = resultsBody.querySelector(`input[data-drug-id="${data[0].id}"]`);
+                        if (newRow) {
+                            newRow.focus();
+                        }
+                    }
+
+                    console.log('New rows added successfully');
+                });
+
+                // Event listener for deleting selected rows
+                deleteRowButton.addEventListener('click', async () => {
+                    const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) {
+                        alert("Please select at least one row to delete.");
+                        return;
+                    }
+
+                    const idsToDelete = Array.from(selectedCheckboxes).map(checkbox => parseInt(checkbox.getAttribute('data-drug-id')));
+
+                    // Delete selected rows from the Supabase database
+                    const { error } = await supabaseClient
+                        .from('drug_table')
+                        .delete()
+                        .in('id', idsToDelete);
+
+                    if (error) {
+                        console.error('Error deleting rows:', error.message);
+                        alert('Failed to delete selected rows. Please try again.');
+                        return;
+                    }
+
+                    // Fetch and display the updated list of drugs, excluding the deleted rows
+                    await fetchAndDisplayDrugs();
+
+                    console.log('Selected rows deleted successfully');
+                    updateDeleteButtonLabel();
+                });
+
+                // Function to update the delete button label
+                function updateDeleteButtonLabel() {
+                    const selectedCount = document.querySelectorAll('.row-checkbox:checked').length;
+                    deleteRowButton.textContent = `Delete ${selectedCount} row(s)`;
+                }
+
+                // Event listener for select all checkbox
+                selectAllCheckbox.addEventListener('change', (event) => {
+                    const checkboxes = document.querySelectorAll('.row-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = event.target.checked;
+                    });
+                    updateDeleteButtonLabel();
+                });
+
+                // Event listener for CSV file upload
+                uploadCSVButton.addEventListener('click', async () => {
+                    const file = csvFileInput.files[0];
+                    if (!file) {
+                        alert('Please select a CSV file to upload.');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                        const csvData = event.target.result;
+                        const rows = csvData.split('\n').slice(1); // Skip header row
+
+                        const newRows = [];
+
+                        // Process each row of the CSV
+                        rows.forEach(row => {
+                            // Split row into columns
+                            const [drugName, drugSupplier, drugImage] = row.split(',');
+
+                            // Check if at least one column is non-empty
+                            if (drugName || drugSupplier || drugImage) {
+                                // Prepare new row object with trimmed values
+                                newRows.push({
+                                    drug_name_column: drugName ? drugName.trim() : '',
+                                    drug_supplier_column: drugSupplier ? drugSupplier.trim() : '',
+                                    drug_image_url_column: drugImage ? drugImage.trim() : ''
+                                });
+                            } else {
+                                console.warn('Skipping row due to all columns being empty:', row);
+                            }
+                        });
+
+                        // Insert new rows into the Supabase database
+                        const { data, error } = await supabaseClient
+                            .from('drug_table')
+                            .insert(newRows)
+                            .select();
+
+                        if (error) {
+                            console.error('Error uploading CSV data:', error.message);
+                            alert('Failed to upload CSV data. Please try again.');
+                            return;
+                        }
+
+                        // Fetch and display the updated list of drugs, including the new rows
+                        await fetchAndDisplayDrugs();
+
+                        console.log('CSV data uploaded successfully');
+                    };
+
+                    reader.readAsText(file);
+                });
+
+                // Initial load of all drugs
+                await fetchAndDisplayDrugs();
+            });
+        </script>
+
+</body>
+
+</html>

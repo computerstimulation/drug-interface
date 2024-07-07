@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Order pharmaceutical products easily and quickly. Find the best drugs from top suppliers.">
+    <meta name="keywords" content="pharmaceuticals, drugs, suppliers, order online, pharmacy">
+    <title>Pharmaceutical Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .product-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding: 0 15px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+            max-width: 500px;
+        }
+
+        .product-details {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .product-title {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1em;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .add-to-cart {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            width: 100%;
+            max-width: 300px;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .add-to-cart:hover {
+            background-color: #2980b9;
+        }
+
+        @media (min-width: 769px) {
+            .product-page {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .product-image {
+                width: 50%;
+                margin-right: 20px;
+            }
+
+            .product-details {
+                width: 50%;
+                text-align: left;
+                margin-top: 0;
+            }
+
+            .product-title {
+                font-size: 2em;
+            }
+
+            .product-description {
+                font-size: 1em;
+            }
+
+            .product-price {
+                font-size: 1.5em;
+            }
+
+            .add-to-cart {
+                width: 100%;
+                max-width: none;
+                font-size: 1.2em;
+            }
+
+            .quantity-selector {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-title {
+                font-size: 1.5em;
+            }
+
+            .product-description {
+                font-size: 0.9em;
+            }
+
+            .product-price {
+                font-size: 1.2em;
+            }
+
+            .add-to-cart {
+                font-size: 1em;
+                padding: 10px;
+            }
+
+            .quantity-input {
+                width: 50px;
+                font-size: 0.9em;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="product-page">
+            <img src="path/to/product-image.jpg" alt="Product Name" class="product-image">
+            <div class="product-details">
+                <h1 class="product-title">Product Name</h1>
+                <p class="product-description">This is a brief description of the product. It includes essential
+                    information and key benefits.</p>
+                <p class="product-price">$XX.XX</p>
+                <div class="quantity-selector">
+                    <input type="number" class="quantity-input" value="1" min="1">
+                    <span>Qty</span>
+                </div>
+                <a href="#" class="add-to-cart">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async (event) => {
+            const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('product_id');
+
+            if (productId) {
+                try {
+                    // Fetch product details from Supabase
+                    const { data, error } = await supabaseClient
+                        .from('drug_table')
+                        .select('drug_name_column, drug_supplier_column, drug_image_url_column, price')
+                        .eq('id', productId)
+                        .single();
+
+                    if (error) throw error;
+
+                    document.querySelector('.product-title').textContent = data.drug_name_column;
+                    document.querySelector('.product-description').textContent = `Supplied by: ${data.drug_supplier_column}`;
+                    document.querySelector('.product-image').src = data.drug_image_url_column;
+                    document.querySelector('.product-image').alt = data.drug_name_column;
+                    document.querySelector('.product-price').textContent = `$${data.price}`;
+                } catch (error) {
+                    console.error('Error fetching product data:', error);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

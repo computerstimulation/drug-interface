@@ -4,258 +4,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
-    <meta name="keywords"
-        content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
+    <meta name="description" content="Your website description here">
+    <meta name="keywords" content="your, website, keywords, here">
     <meta name="author" content="Your Name">
-    <title>Pharmacy Supplier Connection</title>
-    <!-- install Supabase JavaScript Client Library via cdn -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- end install Supabase JavaScript Client Library via cdn -->
+    <title>Pharmology log in</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #F4E2D1;
-            /* Sand color */
-            color: #3E2723;
-            /* Dark brown for text */
-        }
-
-        header {
-            background: linear-gradient(90deg, #005b96, #00a651);
-            /* Blue and green gradient */
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        #searchSection,
-        #filterSection,
-        #resultsSection {
-            margin: 20px auto;
-            max-width: 800px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        label {
-            flex: 1 1 100%;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="search"],
-        select,
-        button {
-            flex: 1 1 calc(50% - 10px);
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .login-page-body {
+            background-color: #d7cece;
             font-size: 16px;
         }
 
+        form {
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        form * {
+            font-size: 1rem;
+            margin: 0 auto;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            font-size: 1rem;
+            display: block;
+            border: 2px solid black;
+            box-sizing: border-box;
+            padding: 10px;
+            width: 100%;
+        }
+
         button {
-            background-color: #005b96;
-            /* Blue button */
-            color: white;
-            border: none;
+            border-radius: 50px;
+            background-color: white;
+            border: 1px solid black;
             cursor: pointer;
-            transition: background-color 0.3s;
+            width: 75%;
         }
 
-        button:hover {
-            background-color: #004080;
-            /* Darker blue for hover effect */
+        .login-page-logo-img {
+            display: block;
+            margin: 0 auto;
+            width: 100px;
+            height: 100px;
+            margin-top: 50px;
+            margin-bottom: 50px;
         }
 
-        @media (max-width: 600px) {
-
-            input[type="text"],
-            select,
-            button {
-                flex: 1 1 100%;
-            }
+        #phone-otp-form {
+            display: none;
         }
 
-        #results div {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #FFF5E1;
-            /* Lighter sandy background for result items */
-            cursor: pointer;
-            /* Indicate the div is clickable */
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-
-        /* Hover effects only for devices with a mouse */
-        @media (hover: hover) and (pointer: fine) {
-            #results div:hover {
-                border-color: #005b96;
-                /* Change border color on hover */
-                background-color: #e0f7fa;
-                /* Light blue background on hover */
-            }
-        }
-
-        .product-name {
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .supplier-name {
-            color: #005b96;
-            /* Blue color for supplier name */
-            font-style: italic;
-            margin-left: auto;
-        }
-
-        .no-supplier {
-            opacity: 0.5;
-            /* Less opacity for drugs with no supplier */
-            color: gray;
-            /* Gray color for text */
-        }
-
-        .product-image {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .placeholder {
-            visibility: hidden;
+        .waiting-for-otp #phone-otp-form {
+            display: block;
         }
     </style>
 </head>
 
-<body>
-    <header>
-        <h1>Pharmacy Supplier Connection</h1>
-    </header>
+<body class="login-page-body">
+    <img class="login-page-logo-img" src="/images/logo.jpg" alt="logo">
+    <form>
+        <input type="email" placeholder="Email" id="form-email-id">
+        <input type="tel" placeholder="Phone" id="form-phone-id">
+        <input type="password" placeholder="Password" id="form-password-id">
+        <button type="button" onclick="signUpWithEmail()">Sign up with Email</button>
+        <button type="button" onclick="signUpWithPhone()">Sign up with Phone</button>
+        <button type="button" onclick="signInWithEmail()">Sign in with Email</button>
+        <button type="button" onclick="signInWithPhone()">Sign in with Phone</button>
+    </form>
 
-    <section id="searchSection">
-        <form id="searchForm">
-            <input type="search" id="searchInput" list="suggestions" placeholder="Search for drugs..." autoCorrect="off"
-                spellCheck="false" autocomplete="off">
-            <button type="submit" id="searchButton">Search</button>
-        </form>
+    <form id="phone-otp-form">
+        <input type="text" inputmode="numeric" placeholder="OTP" id="form-otp-id">
+        <button type="button" onclick="verifyPhoneOTP()">Verify OTP</button>
+    </form>
 
-        <datalist id="suggestions">
-            <option value="Panadol">
-            <option value="Doliprane">
-            <option value="Fervex">
-        </datalist>
-    </section>
-
-    <section id="filterSection">
-        <label for="filterSelect">Filter by Supplier:</label>
-        <select id="filterSelect">
-            <option value="">All</option>
-            <option value="Supplier 1">Supplier 1</option>
-            <option value="Supplier 2">Supplier 2</option>
-            <option value="Supplier 3">Supplier 3</option>
-        </select>
-    </section>
-
-    <section id="resultsSection">
-        <h2>PRODUCTS</h2>
-        <div id="results"></div>
-    </section>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async (event) => {
-            const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
-            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-            const searchForm = document.getElementById('searchForm');
-            const filterSelect = document.getElementById('filterSelect');
-            const resultsDiv = document.getElementById('results');
+        async function signUpWithEmail() {
+            const email = document.getElementById('form-email-id').value;
+            const password = document.getElementById('form-password-id').value;
+            const { user, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+            });
 
-            // Function to fetch and display drugs based on search and filter
-            async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
-                let query = supabaseClient
-                    .from('drug_table')
-                    .select('id, drug_name_column, drug_supplier_column, drug_image_url_column');
-
-                if (searchInput) {
-                    query = query.ilike('drug_name_column', `%${searchInput}%`);
-                }
-
-                if (supplierFilter) {
-                    query = query.eq('drug_supplier_column', supplierFilter);
-                }
-
-                const { data, error } = await query;
-
-                if (error) {
-                    console.error('Error fetching data:', error);
-                    resultsDiv.innerText = 'Error fetching data.';
-                    return;
-                }
-
-                resultsDiv.innerHTML = '';
-                if (data.length > 0) {
-                    data.forEach(drug => {
-                        const drugDiv = document.createElement('div');
-                        const imageUrl = drug.drug_image_url_column || '';
-                        const imgClass = imageUrl ? 'product-image' : 'product-image placeholder';
-                        const supplierText = drug.drug_supplier_column ? `from ${drug.drug_supplier_column}` : 'Unavailable';
-                        const supplierClass = drug.drug_supplier_column ? 'supplier-name' : 'supplier-name no-supplier';
-                        drugDiv.innerHTML = `
-                            <img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
-                            <span class="product-name">${drug.drug_name_column}</span>
-                            <span class="${supplierClass}">${supplierText}</span>
-                        `;
-                        drugDiv.addEventListener('click', () => {
-                            window.location.href = `product-page.html?product_id=${drug.id}`;
-                        });
-                        resultsDiv.appendChild(drugDiv);
-                    });
-                } else {
-                    resultsDiv.innerText = 'No results found.';
-                }
+            if (!error) {
+                alert('sign up successful');
+                window.location.href = 'dashboard.html';
             }
+        }
 
-            // Event listener for search form submission
-            searchForm.addEventListener('submit', async function (event) {
-                event.preventDefault();
-                const searchInput = document.getElementById('searchInput').value;
-                const supplierFilter = filterSelect.value;
-
-                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+        async function signInWithEmail() {
+            const email = document.getElementById('form-email-id').value;
+            const password = document.getElementById('form-password-id').value;
+            const { user, session, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
             });
 
-            // Event listener for filter selection change
-            filterSelect.addEventListener('change', async function () {
-                const searchInput = document.getElementById('searchInput').value;
-                const supplierFilter = filterSelect.value;
+            if (!error) {
+                alert('sign in successful');
+                window.location.href = 'dashboard.html';
+            }
+        }
 
-                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+        async function signInWithPhone() {
+            const phone = document.getElementById('form-phone-id').value;
+            const password = document.getElementById('form-password-id').value;
+            const { user, session, error } = await supabaseClient.auth.signInWithPassword({
+                phone: phone,
+                password: password
             });
 
-            // Initial load of all drugs
-            await fetchAndDisplayDrugs();
-        });
+            if (!error) {
+                alert('sign in successful');
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        async function signUpWithPhone() {
+            const phone = document.getElementById('form-phone-id').value;
+            const password = document.getElementById('form-password-id').value;
+            const { data, error } = await supabaseClient.auth.signUp({
+                phone,
+                password,
+            })
+
+            if (!error) {
+                document.documentElement.classList.add('waiting-for-otp');
+            }
+        }
+
+        async function verifyPhoneOTP() {
+            const phone = document.getElementById('form-phone-id').value;
+            const token = document.getElementById('form-otp-id').value;
+
+            const { data: { session }, error } = await supabaseClient.auth.verifyOtp({
+                phone,
+                token,
+                type: 'sms',
+            })
+        }
     </script>
 </body>
 
-</html
+</html>

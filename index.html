@@ -42,25 +42,29 @@
             background-color: white;
             border: 1px solid black;
             cursor: pointer;
-            width: 75%;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px;
         }
 
         .logo-container-div {
-            position: relative;
             margin: 0 auto;
             width: 300px;
-            height: 300px;            
+            height: 200px;  
+            border: 0px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .login-page-logo-img {
-            margin: 0 auto;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             width: 300px;
             height: 300px;
-            position: absolute;
         }
 
         #phone-otp-form {
@@ -83,8 +87,8 @@
         <input type="password" placeholder="Password" id="form-password-id">
         <!--<button type="button" onclick="signUpWithEmail()">Sign up with Email</button>
         <button type="button" onclick="signUpWithPhone()">Sign up with Phone</button>-->
-        <button type="button" onclick="signInWithEmail()">Sign in with Email</button>
-        <button type="button" onclick="signInWithPhone()">Sign in with Phone</button>
+        <button type="button" onclick="signInWithEmail()">Login with Email</button>
+        <button type="button" onclick="signInWithPhone()">Login with Phone</button>
     </form>
 
     <form id="phone-otp-form">

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your page description here">
+    <meta name="keywords" content="your, keywords, here">
+    <meta name="author" content="Your Name">
+    <title>Your Page Title</title>
+    <style>
+        .searchProductsPageBody {
+            background-color: #d7cece;
+            font-size: 16px;
+            color: black;
+        }
+
+        .searchProductsPageLogoDiv {
+            margin: 0 auto;
+            width: 400px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 0px solid black;
+            margin-bottom: 2%;
+        }
+
+        .searchProductsPageLogoDiv img {
+            width: 120%;
+            height: auto;
+        }
+
+        .searchProductsPageSearchInput {
+            font-size: 1rem;
+            display: block;
+            border: 2px solid black;
+            box-sizing: border-box;
+            padding: 10px;
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            margin-bottom: 2%;
+        }
+
+        .searchProductsPageRechercheButton {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid black;
+            background-color: white;
+            cursor: pointer;
+            box-sizing: border-box;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body class="searchProductsPageBody">
+    <div class="searchProductsPageLogoDiv">
+        <img src="/images/Pharmology 2.svg">
+    </div>
+    <input type="text" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
+        class="searchProductsPageSearchInput">
+    <button id="searchProductsPageSearchButtonId" class="searchProductsPageRechercheButton">Recherche</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function searchProducts() {
+
+            //define search query
+            let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+            const { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select()
+                .ilike('product_name_column', `%${searchQuery}%`)
+        }
+
+        // Event listener for the Enter key press
+        document.getElementById('searchProductsPageSearchInputId').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                searchProducts();
+            }
+        });
+
+        document.getElementById('searchProductsPageSearchButtonId').addEventListener('click', searchProducts);
+    </script>
+</body>
+
+</html>

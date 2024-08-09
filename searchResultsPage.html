@@ -39,9 +39,7 @@
             height: 50px;
         }
 
-        .searchResultsPageLogoDiv {
-
-        }
+        .searchResultsPageLogoDiv {}
 
         .searchResultsPageLogoDiv img {
             width: 50px;
@@ -239,6 +237,9 @@
         //who the user has chosen and add them to the array
         let filteredSuppliers = [];
 
+        //define regularPlusFuzzyRawSearchResults = [];
+        let regularPlusFuzzySearchResults = [];
+
         //list the products gotten from the search function
         //display the fucking results
         function listResults(data) {
@@ -352,8 +353,33 @@
                 .select()
                 .ilike('product_name_column', `%${searchQuery}%`)
 
+            console.log(`regular search data: ${data}`);
+
+            //add the fuzzy search results to the original search
+            //first search
+            const { data: fuzzySearchData, error: fuzzySearchError } = await supabaseClient
+                .rpc('fuzzy_search', {
+                    table_name: 'pharmology_product_table',
+                    column_name: 'product_name_column',
+                    search_term: searchQuery,  // Your search term
+                    similarity_threshold: 0.0  // Your desired threshold
+                });
+
+            //log fuzzy search data
+            console.log(`fuzzy search data: ${fuzzySearchData}`);
+
+            //then merge the arrays
+            regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+            console.log(`merged search data: ${regularPlusFuzzySearchResults}`);
+
+            //then remove the duplicates
+            regularPlusFuzzySearchResults = Array.from(
+                new Map(regularPlusFuzzySearchResults.map(item => [item.id, item])).values()
+            );
+            console.log(`merged search data with removed duplicates: ${regularPlusFuzzySearchResults}`);
+
             //list the results
-            listResults(data);
+            listResults(regularPlusFuzzySearchResults);
         }
 
         //create a new filtered search function which doesn't clear the filters
@@ -365,8 +391,25 @@
                 .select()
                 .ilike('product_name_column', `%${searchQuery}%`)
 
+            //add the fuzzy search results
+            const { data: fuzzySearchData, error: fuzzySearchError } = await supabaseClient
+                .rpc('fuzzy_search', {
+                    table_name: 'pharmology_product_table',
+                    column_name: 'product_name_column',
+                    search_term: searchQuery,  // Your search term
+                    similarity_threshold: 0.0  // Your desired threshold
+                });
+
+            //merge the datasets (search results)
+            regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+
+            //remove dupes
+            regularPlusFuzzySearchResults = Array.from(
+                new Map(regularPlusFuzzySearchResults.map(item => [item.id, item])).values()
+            );
+
             //filter the results
-            let filteredResults = data.filter((product) => {
+            let filteredResults = regularPlusFuzzySearchResults.filter((product) => {
                 return filteredSuppliers.includes(product.product_supplier_column);
             });
 

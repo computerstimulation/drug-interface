@@ -20,6 +20,10 @@
             font-size: 16px;
         }
 
+        button {
+            cursor: pointer;
+        }
+
         .searchResultsPageDiv {
             height: 100vh;
         }
@@ -28,8 +32,6 @@
             background-color: #d7cece;
             font-size: 16px;
             color: black;
-            width: 100%;
-            height: 20%;
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
@@ -66,10 +68,20 @@
 
         .searchResultsPageSearchButton {
             width: 20%;
-            min-height: 60%;
             border: none;
             border-radius: 0 5px 5px 0;
-            background-color: blue;
+            background-color: #223e62;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .searchResultsPageSearchButton img {
+            height: auto;
+        }
+
+        .searchResultsPageCartImg {
+            width: 100px;
+            height: auto;
             cursor: pointer;
         }
 
@@ -91,20 +103,30 @@
             background-color: #d9d9d9;
             margin-top: 2%;
             padding: 10px;
+            border: 1px solid black;
+            border-radius: 20px;
         }
 
-        .searchResultsPageSupplierFiltersDivClass {
+        .searchResultsPageSupplierFiltersInnerDivClass {
             position: relative;
             display: flex;
         }
 
         .searchResultsPageSupplierFilterInputClass {
-            display: none;
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+            border: 1px solid black;
+            appearance: none;
         }
 
         label {
             border: 0px solid black;
             width: 100%;
+            cursor: pointer;
+            line-height: 1rem;
+            display: flex;
+            align-items: center;
         }
 
         .searchResultsPageResultsDiv {
@@ -117,13 +139,39 @@
             background-color: #d9d9d9;
             border: 1px solid black;
             border-radius: 5px;
-            height: 100px;
             width: 100%;
+            height: 200px;
+        }
+
+        .searchResultsPageProductImageDivClass {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
         }
 
         .searchResultsPageProductImage {
             width: 100px;
             height: 100px;
+        }
+
+        .searchResultsPageProductQuantityButtonsDivClass {
+            background-color: #223e62;
+            border-radius: 50px;
+            color: white;
+        }
+
+        .searchResultsPageProductQuantityButtonsDivClass button {
+            background-color: #5db639;
+            color: #223e62;
+            border-radius: 50px;
+            border: 0;
+        }
+
+        .searchResultsPageProductAddToCartButtonClass button {
+            background-color: #1e1e1e;
+            color: white;
+            border-radius: 50px;
+            border: 0;
         }
 
         .searchResultsPageProductNameDiv {
@@ -164,9 +212,10 @@
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
                     placeholder="Rechercher Medicament">
-                <button class="searchResultsPageSearchButton"></button>
+                <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
+                        src="/svg/search.svg"></button>
             </div>
-            <img class="searchResultsPageCartImg" alt="Shopping cart">
+            <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
         </div>
         <div class="searchResultsPageMainDiv">
             <div class="searchResultsPageFilterDiv">
@@ -209,7 +258,29 @@
                 console.log(searchQuerySuppliers);
 
                 //create a product
-                document.getElementById('searchResultsPageResultsDivId').innerHTML += `<div class="searchResultsPageProductDiv"><img src="${product.product_image_url_column}" class="searchResultsPageProductImage"><div class="searchResultsPageProductNameDiv">${product.product_name_column}</div><div class="searchResultsPageProductPriceAndSupplierDiv"><div class="searchResultsPageProductPriceDiv">${product.price} DT</div><div class="searchResultsPageProductSupplierDiv"><img src="${product.supplier_logo_url_column}"></div></div></div><br>`;
+                document.getElementById('searchResultsPageResultsDivId').innerHTML += `
+                <div class="searchResultsPageProductDiv">
+                    <div class="searchResultsPageProductImageDivClass">
+                        <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
+                        <div class="searchResultsPageProductQuantityButtonsDivClass">
+                        <button>-</button>
+                        Qntity
+                        <button>+</button>
+                        </div>
+                        <div class="searchResultsPageProductAddToCartButtonClass">
+                            <button>Ajouter à Commande</button>
+                        </div>
+                    </div>
+                    <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
+                    <div class="searchResultsPageProductPriceAndSupplierDiv">
+                        <div class="searchResultsPageProductPriceDiv">${product.price} DT</div>
+                        <div class="searchResultsPageProductSupplierDiv">
+                            <img src="${product.supplier_logo_url_column}">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                `;
             });
 
             //add all the searchQuerySuppliers to the filteredSuppliers array as in the beginning
@@ -225,7 +296,7 @@
             //list the suppliers for this search query
             //make sure all checkboxes are ticked since we are displaying all search results
             searchQuerySuppliers.forEach((supplier) => {
-                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersDivClass"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><label for="searchResultsPage${supplier}FilterInput">${supplier}</div>`;
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}">${supplier}</div>`;
             })
 
             //listen to filter change for this search query
@@ -353,6 +424,17 @@
                 searchProducts();
             }
         });
+
+        document.getElementById('searchResultsPageSearchButtonId').addEventListener('click', function () {
+
+            //update url
+            let url = new URL(window.location);
+            url.searchParams.set('query', searchQuery);
+            history.pushState({}, '', url);
+
+            //perform a new search
+            searchProducts();
+        })
     </script>
 </body>
 

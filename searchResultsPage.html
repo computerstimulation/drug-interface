@@ -385,7 +385,29 @@
             filteredResults.forEach((product) => {
 
                 //create a product
-                document.getElementById('searchResultsPageResultsDivId').innerHTML += `<div class="searchResultsPageProductDiv"><img src="${product.product_image_url_column}" class="searchResultsPageProductImage"><div class="searchResultsPageProductNameDiv">${product.product_name_column}</div><div class="searchResultsPageProductPriceAndSupplierDiv"><div class="searchResultsPageProductPriceDiv">${product.price} DT</div><div class="searchResultsPageProductSupplierDiv"><img src="${product.supplier_logo_url_column}"></div></div></div><br>`;
+                document.getElementById('searchResultsPageResultsDivId').innerHTML += `
+                <div class="searchResultsPageProductDiv">
+                    <div class="searchResultsPageProductImageDivClass">
+                        <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
+                        <div class="searchResultsPageProductQuantityButtonsDivClass">
+                        <button>-</button>
+                        Qntity
+                        <button>+</button>
+                        </div>
+                        <div class="searchResultsPageProductAddToCartButtonClass">
+                            <button>Ajouter à Commande</button>
+                        </div>
+                    </div>
+                    <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
+                    <div class="searchResultsPageProductPriceAndSupplierDiv">
+                        <div class="searchResultsPageProductPriceDiv">${product.price} DT</div>
+                        <div class="searchResultsPageProductSupplierDiv">
+                            <img src="${product.supplier_logo_url_column}">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                `;
             });
         }
 

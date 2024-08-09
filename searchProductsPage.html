@@ -9,6 +9,9 @@
     <meta name="author" content="Your Name">
     <title>Your Page Title</title>
     <style>
+        body {
+            margin: 0;
+        }
         .searchProductsPageBody {
             background-color: #d7cece;
             font-size: 16px;
@@ -62,7 +65,7 @@
     <div class="searchProductsPageLogoDiv">
         <img src="/images/Pharmology 2.svg">
     </div>
-    <input type="text" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
+    <input type="search" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
         class="searchProductsPageSearchInput">
     <button id="searchProductsPageSearchButtonId" class="searchProductsPageRechercheButton">Recherche</button>
 
@@ -72,24 +75,18 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function searchProducts() {
-
-            //define search query
-            let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
-            const { data, error } = await supabaseClient
-                .from('pharmology_product_table')
-                .select()
-                .ilike('product_name_column', `%${searchQuery}%`)
-        }
-
         // Event listener for the Enter key press
         document.getElementById('searchProductsPageSearchInputId').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
-                searchProducts();
+                let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+                window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
             }
         });
 
-        document.getElementById('searchProductsPageSearchButtonId').addEventListener('click', searchProducts);
+        document.getElementById('searchProductsPageSearchButtonId').addEventListener('click', function () {
+            let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+            window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+        });
     </script>
 </body>
 

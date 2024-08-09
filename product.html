@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Effortlessly connect pharmacists with drug suppliers for streamlined communication and efficient drug procurement.">
+        content="Effortlessly connect pharmacists with product suppliers for streamlined communication and efficient product procurement.">
     <meta name="keywords"
-        content="pharmacy, drug suppliers, pharmaceutical, drug procurement, pharmacist communication">
+        content="pharmacy, product suppliers, pharmaceutical, product procurement, pharmacist communication">
     <meta name="author" content="Your Name">
     <title>Pharmacy Supplier Connection</title>
     <!-- install Supabase JavaScript Client Library via cdn -->
@@ -135,7 +135,7 @@
 
         .no-supplier {
             opacity: 0.5;
-            /* Less opacity for drugs with no supplier */
+            /* Less opacity for products with no supplier */
             color: gray;
             /* Gray color for text */
         }
@@ -160,8 +160,8 @@
 
     <section id="searchSection">
         <form id="searchForm">
-            <input type="search" id="searchInput" list="suggestions" placeholder="Search for drugs..." autoCorrect="off"
-                spellCheck="false" autocomplete="off">
+            <input type="search" id="searchInput" list="suggestions" placeholder="Search for products..."
+                autoCorrect="off" spellCheck="false" autocomplete="off">
             <button type="submit" id="searchButton">Search</button>
         </form>
 
@@ -197,18 +197,18 @@
             const filterSelect = document.getElementById('filterSelect');
             const resultsDiv = document.getElementById('results');
 
-            // Function to fetch and display drugs based on search and filter
-            async function fetchAndDisplayDrugs(searchInput, supplierFilter) {
+            // Function to fetch and display products based on search and filter
+            async function fetchAndDisplayproducts(searchInput, supplierFilter) {
                 let query = supabaseClient
-                    .from('drug_table')
-                    .select('id, drug_name_column, drug_supplier_column, drug_image_url_column');
+                    .from('pharmology_product_table')
+                    .select('id, product_name_column, product_supplier_column, product_image_url_column');
 
                 if (searchInput) {
-                    query = query.ilike('drug_name_column', `%${searchInput}%`);
+                    query = query.ilike('product_name_column', `%${searchInput}%`);
                 }
 
                 if (supplierFilter) {
-                    query = query.eq('drug_supplier_column', supplierFilter);
+                    query = query.eq('product_supplier_column', supplierFilter);
                 }
 
                 const { data, error } = await query;
@@ -221,21 +221,21 @@
 
                 resultsDiv.innerHTML = '';
                 if (data.length > 0) {
-                    data.forEach(drug => {
-                        const drugDiv = document.createElement('div');
-                        const imageUrl = drug.drug_image_url_column || '';
+                    data.forEach(product => {
+                        const productDiv = document.createElement('div');
+                        const imageUrl = product.product_image_url_column || '';
                         const imgClass = imageUrl ? 'product-image' : 'product-image placeholder';
-                        const supplierText = drug.drug_supplier_column ? `from ${drug.drug_supplier_column}` : 'Unavailable';
-                        const supplierClass = drug.drug_supplier_column ? 'supplier-name' : 'supplier-name no-supplier';
-                        drugDiv.innerHTML = `
-                            <img src="${imageUrl}" alt="${drug.drug_name_column}" class="${imgClass}">
-                            <span class="product-name">${drug.drug_name_column}</span>
+                        const supplierText = product.product_supplier_column ? `from ${product.product_supplier_column}` : 'Unavailable';
+                        const supplierClass = product.product_supplier_column ? 'supplier-name' : 'supplier-name no-supplier';
+                        productDiv.innerHTML = `
+                            <img src="${imageUrl}" alt="${product.product_name_column}" class="${imgClass}">
+                            <span class="product-name">${product.product_name_column}</span>
                             <span class="${supplierClass}">${supplierText}</span>
                         `;
-                        drugDiv.addEventListener('click', () => {
-                            window.location.href = `product-page.html?product_id=${drug.id}`;
+                        productDiv.addEventListener('click', () => {
+                            window.location.href = `product-page.html?product_id=${product.id}`;
                         });
-                        resultsDiv.appendChild(drugDiv);
+                        resultsDiv.appendChild(productDiv);
                     });
                 } else {
                     resultsDiv.innerText = 'No results found.';
@@ -248,7 +248,7 @@
                 const searchInput = document.getElementById('searchInput').value;
                 const supplierFilter = filterSelect.value;
 
-                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+                await fetchAndDisplayproducts(searchInput, supplierFilter);
             });
 
             // Event listener for filter selection change
@@ -256,11 +256,11 @@
                 const searchInput = document.getElementById('searchInput').value;
                 const supplierFilter = filterSelect.value;
 
-                await fetchAndDisplayDrugs(searchInput, supplierFilter);
+                await fetchAndDisplayproducts(searchInput, supplierFilter);
             });
 
-            // Initial load of all drugs
-            await fetchAndDisplayDrugs();
+            // Initial load of all products
+            await fetchAndDisplayproducts();
         });
     </script>
 </body>

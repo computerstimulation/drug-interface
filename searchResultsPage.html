@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,352 @@
     <meta name="keywords" content="your, keywords, here">
     <meta name="author" content="Your Name">
     <title>Your Page Title</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        body {
+            margin: 0;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .searchResultsPageDiv {
+            height: 100vh;
+        }
+
+        .searchResultsPageHeaderDiv {
+            background-color: #d7cece;
+            font-size: 16px;
+            color: black;
+            width: 100%;
+            height: 20%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .searchResultsPageLogoDiv {
+            display: inline-flex;
+            border: 0px solid black;
+            width: 20%;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .searchResultsPageLogoDiv img {
+            width: 90%;
+        }
+
+        .searchResultsPageSearchDiv {
+            width: 50%;
+            display: flex;
+        }
+
+        .searchResultsPageSearchInput {
+            width: 100%;
+            min-height: 60%;
+            appearance: none;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            padding: 10px;
+        }
+
+        .searchResultsPageSearchButton {
+            width: 20%;
+            min-height: 60%;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            background-color: blue;
+            cursor: pointer;
+        }
+
+        .searchResultsPageMainDiv {
+            display: flex;
+            width: 100%;
+            box-sizing: border-box;
+            height: 80%;
+        }
+
+        .searchResultsPageFilterDiv {
+            width: 20%;
+            box-sizing: border-box;
+            padding: 20px;
+            height: 80%;
+        }
+
+        .searchResultsPageFilterInnerDiv {
+            background-color: #d9d9d9;
+            margin-top: 2%;
+            padding: 10px;
+        }
+
+        .searchResultsPageSupplierFiltersDivClass {
+            position: relative;
+            display: flex;
+        }
+
+        .searchResultsPageSupplierFilterInputClass {
+            display: none;
+        }
+
+        label {
+            border: 0px solid black;
+            width: 100%;
+        }
+
+        .searchResultsPageResultsDiv {
+            margin-top: 2%;
+        }
+
+        .searchResultsPageProductDiv {
+            display: flex;
+            align-items: center;
+            background-color: #d9d9d9;
+            border: 1px solid black;
+            border-radius: 5px;
+            height: 100px;
+            width: 100%;
+        }
+
+        .searchResultsPageProductImage {
+            width: 100px;
+            height: 100px;
+        }
+
+        .searchResultsPageProductNameDiv {
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            padding-left: 10px;
+        }
+
+        .searchResultsPageProductPriceAndSupplierDiv {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .searchResultsPageProductPriceDiv {
+            border-bottom: 1px solid black;
+        }
+
+        .searchResultsPageProductSupplierDiv {}
+
+        .searchResultsPageProductSupplierDiv img {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
 </head>
+
 <body>
-    <!-- Your content goes here -->
+    <div class="searchResultsPageDiv">
+        <div class="searchResultsPageHeaderDiv">
+            <div class="searchResultsPageLogoDiv">
+                <img src="/images/Pharmology 2.svg" alt="Pharmology logo">
+            </div>
+            <div class="searchResultsPageSearchDiv">
+                <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
+                    placeholder="Rechercher Medicament">
+                <button class="searchResultsPageSearchButton"></button>
+            </div>
+            <img class="searchResultsPageCartImg" alt="Shopping cart">
+        </div>
+        <div class="searchResultsPageMainDiv">
+            <div class="searchResultsPageFilterDiv">
+                <div class="searchResultsPageFilterInnerDiv" id="searchResultsPageFilterInnerDivId">
+                    <span>Filter Par:</span>
+                    <span>Fournisseur</span>
+                    <input type="search">
+                    <div id="searchResultsPageSuppliersFilterDiv"></div>
+                </div>
+            </div>
+            <div id="searchResultsPageResultsDivId" class="searchResultsPageResultsDiv"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        //define search suppliers query
+        let searchQuerySuppliers = [];
+
+        //create a supplier filter array to take in suppliers
+        //who the user has chosen and add them to the array
+        let filteredSuppliers = [];
+
+        //list the products gotten from the search function
+        //display the fucking results
+        function listResults(data) {
+            document.getElementById('searchResultsPageResultsDivId').innerHTML = '';
+            data.forEach((product) => {
+
+                //place the product.product_supplier_column in an array
+                //if it is not duplicate in order to save all the unique
+                //suppliers of the search query
+                if (!searchQuerySuppliers.includes(product.product_supplier_column)) {
+                    searchQuerySuppliers.push(product.product_supplier_column);
+                }
+                console.log(searchQuerySuppliers);
+
+                //create a product
+                document.getElementById('searchResultsPageResultsDivId').innerHTML += `<div class="searchResultsPageProductDiv"><img src="${product.product_image_url_column}" class="searchResultsPageProductImage"><div class="searchResultsPageProductNameDiv">${product.product_name_column}</div><div class="searchResultsPageProductPriceAndSupplierDiv"><div class="searchResultsPageProductPriceDiv">${product.price} DT</div><div class="searchResultsPageProductSupplierDiv"><img src="${product.supplier_logo_url_column}"></div></div></div><br>`;
+            });
+
+            //add all the searchQuerySuppliers to the filteredSuppliers array as in the beginning
+            //all the suppliers will be selected by default
+            filteredSuppliers = searchQuerySuppliers;
+
+            //log the filtered suppliers when you first list the results
+            console.log(`log the filtered suppliers when first listing products for a search query: ${filteredSuppliers}`);
+
+            //clear the filters section for this search query
+            document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML = '';
+
+            //list the suppliers for this search query
+            //make sure all checkboxes are ticked since we are displaying all search results
+            searchQuerySuppliers.forEach((supplier) => {
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersDivClass"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><label for="searchResultsPage${supplier}FilterInput">${supplier}</div>`;
+            })
+
+            //listen to filter change for this search query
+            document.querySelectorAll('.searchResultsPageSupplierFilterInputClass').forEach((checkbox) => {
+                checkbox.addEventListener('change', (event) => {
+
+                    console.log(`list the filtered suppliers before the checkbox change: ${filteredSuppliers}`);
+
+                    //add an item when checked
+                    if (checkbox.checked) {
+
+                        console.log(`checkbox checked`);
+
+                        //after adding back all items to the filteredSuppliers, it will include all checkboxes
+                        //this means the following condition won't work because the filteredSuppliers array already
+                        //has the item inside
+                        //this is counterinuitive because when you remove the last checkbox you shouldn't get
+                        //all items but instead no items hence why items should be checked on search
+                        if (!filteredSuppliers.includes(checkbox.value)) {
+                            filteredSuppliers.push(checkbox.value);
+                            console.log(`checkbox checked. new selected suppliers array: ${filteredSuppliers}`);
+                        }
+                    }
+
+                    //remove the item when unchecked
+                    if (!checkbox.checked) {
+
+                        console.log(`checkbox unchecked`);
+
+                        if (filteredSuppliers.includes(checkbox.value)) {
+                            filteredSuppliers = filteredSuppliers.filter((supplier) => supplier !== checkbox.value);
+                            console.log(`checkbox unchecked new selection: ${filteredSuppliers}`);
+                        }
+                    };
+
+                    //invoke a new filtered search function which doesn't clear
+                    //the filters
+                    filteredSearch();
+                })
+            });
+        }
+
+        //search products function (new search)
+        async function searchProducts() {
+
+            //but first clear the searchQuery suppliers in order to
+            //make sure there are no leftover suppliers from the last search query
+            //clear search query suppliers array
+            searchQuerySuppliers = [];
+
+            //clear the supplier filters array
+            filteredSuppliers = [];
+
+            //define search query
+            const { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select()
+                .ilike('product_name_column', `%${searchQuery}%`)
+
+            //list the results
+            listResults(data);
+        }
+
+        //create a new filtered search function which doesn't clear the filters
+        async function filteredSearch() {
+
+            //define search query
+            const { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select()
+                .ilike('product_name_column', `%${searchQuery}%`)
+
+            //filter the results
+            let filteredResults = data.filter((product) => {
+                return filteredSuppliers.includes(product.product_supplier_column);
+            });
+
+            //list the filtered results
+            filteredListResults(filteredResults);
+        }
+
+        //create filtered list results function
+        function filteredListResults(filteredResults) {
+            document.getElementById('searchResultsPageResultsDivId').innerHTML = '';
+
+            filteredResults.forEach((product) => {
+
+                //create a product
+                document.getElementById('searchResultsPageResultsDivId').innerHTML += `<div class="searchResultsPageProductDiv"><img src="${product.product_image_url_column}" class="searchResultsPageProductImage"><div class="searchResultsPageProductNameDiv">${product.product_name_column}</div><div class="searchResultsPageProductPriceAndSupplierDiv"><div class="searchResultsPageProductPriceDiv">${product.price} DT</div><div class="searchResultsPageProductSupplierDiv"><img src="${product.supplier_logo_url_column}"></div></div></div><br>`;
+            });
+        }
+
+        let searchQuery;
+        //perform a new search on window load
+        window.addEventListener('DOMContentLoaded', function () {
+
+            //get the search query from the URL on page load
+            searchQuery = new URLSearchParams(window.location.search).get('query');
+            console.log(searchQuery);
+
+            //update the search bar with the search query taken from the URL
+            document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
+
+            searchProducts();
+        });
+
+        //on user search take search query
+        //update url
+        //and update search query
+        document.getElementById('searchResultsPageSearchInputId').addEventListener('input', (event) => {
+            searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+            console.log(searchQuery);
+        })
+
+        // Event listener for the Enter key press on the search bar input
+        document.getElementById('searchResultsPageSearchInputId').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+
+                //update url
+                let url = new URL(window.location);
+                url.searchParams.set('query', searchQuery);
+                history.pushState({}, '', url);
+
+                //perform a new search
+                searchProducts();
+            }
+        });
+    </script>
 </body>
+
 </html>

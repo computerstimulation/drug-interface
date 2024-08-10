@@ -102,6 +102,16 @@
             display: flex;
         }
 
+        label {
+            border: 0px solid black;
+            width: 100%;
+            cursor: pointer;
+            line-height: 1rem;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
         .searchResultsPageSupplierFilterInputClass {
             width: 1rem;
             height: 1rem;
@@ -110,13 +120,16 @@
             appearance: none;
         }
 
-        label {
-            border: 0px solid black;
-            width: 100%;
-            cursor: pointer;
-            line-height: 1rem;
-            display: flex;
-            align-items: center;
+        .searchResultsPageFilterCheckboxImgClass {
+            width: 0.5rem;
+            height: 0.5rem;
+            position: absolute;
+            left: 0.375rem;
+            visibility: hidden;
+        }
+
+        .searchResultsPageSupplierFilterInputClass:checked+.searchResultsPageFilterCheckboxImgClass {
+            visibility: visible;
         }
 
         .searchResultsPageResultsDiv {
@@ -257,7 +270,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                         <button>-</button>
-                        Qntity
+                        <span id="searchResultsPageProductQuantitySpanId">0</span>
                         <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -276,6 +289,26 @@
                 `;
             });
 
+            //add event listeners to listen to quantity button presses and adjust the quantity
+            //of the intended product as well as change the quantity span to reflect
+            //the new quantity
+            document.querySelectorAll('.searchResultsPageProductQuantityButtonsDivClass button').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    let quantitySpan = button.parentElement.querySelector('#searchResultsPageProductQuantitySpanId');
+                    let quantity = parseInt(quantitySpan.innerText);
+
+                    if (button.innerText === '+') {
+                        quantity++;
+                    }
+
+                    if (button.innerText === '-' && quantity > 0) {
+                        quantity--;
+                    }
+
+                    quantitySpan.innerText = quantity;
+                });
+            });
+
             //add all the searchQuerySuppliers to the filteredSuppliers array as in the beginning
             //all the suppliers will be selected by default
             filteredSuppliers = searchQuerySuppliers;
@@ -289,7 +322,7 @@
             //list the suppliers for this search query
             //make sure all checkboxes are ticked since we are displaying all search results
             searchQuerySuppliers.forEach((supplier) => {
-                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}">${supplier}</div>`;
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
             })
 
             //listen to filter change for this search query
@@ -426,7 +459,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                         <button>-</button>
-                        Qntity
+                        <span id="searchResultsPageProductQuantitySpanId">0</span>
                         <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -444,7 +477,27 @@
                 <br>
                 `;
             });
-        }
+
+            //add event listeners to listen to quantity button presses and adjust the quantity
+            //of the intended product as well as change the quantity span to reflect
+            //the new quantity
+            document.querySelectorAll('.searchResultsPageProductQuantityButtonsDivClass button').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    let quantitySpan = button.parentElement.querySelector('#searchResultsPageProductQuantitySpanId');
+                    let quantity = parseInt(quantitySpan.innerText);
+
+                    if (button.innerText === '+') {
+                        quantity++;
+                    }
+
+                    if (button.innerText === '-' && quantity > 0) {
+                        quantity--;
+                    }
+
+                    quantitySpan.innerText = quantity;
+                });
+            });
+        };
 
         let searchQuery;
         //perform a new search on window load

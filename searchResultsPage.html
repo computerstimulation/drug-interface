@@ -82,20 +82,16 @@
         .searchResultsPageMainDiv {
             display: flex;
             width: 100%;
-            box-sizing: border-box;
-            height: 80%;
+            padding: 20px;
+            gap: 20px;
         }
 
         .searchResultsPageFilterDiv {
             width: 20%;
-            box-sizing: border-box;
-            padding: 20px;
-            height: 80%;
         }
 
         .searchResultsPageFilterInnerDiv {
             background-color: #d9d9d9;
-            margin-top: 2%;
             padding: 10px;
             border: 1px solid black;
             border-radius: 20px;
@@ -124,7 +120,7 @@
         }
 
         .searchResultsPageResultsDiv {
-            margin-top: 2%;
+            flex-grow: 1;
         }
 
         .searchResultsPageProductDiv {
@@ -226,8 +222,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseUrl = 'https://opyjzrczlxmwgspveoyh.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9weWp6cmN6bHhtd2dzcHZlb3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM5NjI2NzIsImV4cCI6MjAyOTUzODY3Mn0.Ysi-eZwxqll0_40l6cKP934yQEDBSDaJ5tcgB9yZPDw';
+        const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         //define search suppliers query

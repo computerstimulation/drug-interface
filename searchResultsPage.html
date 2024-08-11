@@ -356,7 +356,10 @@
 
             //add all the searchQuerySuppliers to the filteredSuppliers array as in the beginning
             //all the suppliers will be selected by default
-            filteredSuppliers = searchQuerySuppliers;
+            //we will remove this in order to make filteredSuppliers none in the beginning
+            //and then incrementally add suppliers to the list in the case of the user checking
+            //the supplier checkboxes
+            filteredSuppliers = [];
 
             //log the filtered suppliers when you first list the results
             console.log(`log the filtered suppliers when first listing products for a search query: ${filteredSuppliers}`);
@@ -367,7 +370,7 @@
             //list the suppliers for this search query
             //make sure all checkboxes are ticked since we are displaying all search results
             searchQuerySuppliers.forEach((supplier) => {
-                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input checked class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
             })
 
             //listen to filter change for this search query
@@ -401,11 +404,32 @@
                             filteredSuppliers = filteredSuppliers.filter((supplier) => supplier !== checkbox.value);
                             console.log(`checkbox unchecked new selection: ${filteredSuppliers}`);
                         }
+
+                        //if this is the last checkbox unchecked then we need to not add
+                        //all suppliers back to the filteredSuppliers because w
+                        if (filteredSuppliers.length === 0) {
+                            filteredSuppliers = searchQuerySuppliers;
+                            console.log(searchQuerySuppliers);
+
+                            //new search
+                            searchProducts();
+
+                            //in the new search we cleared the filtered suppliers array
+                            console.log(`new search`);
+                        }
+
                     };
 
                     //invoke a new filtered search function which doesn't clear
-                    //the filters
-                    filteredSearch();
+                    //the filters only if the filtered suppliers is not empty
+
+                    //since we cleared the filtered suppliers array in the new search which was invoked 
+                    //when the filtered suppliers was empty the unchecking of the last box would exit
+                    //before this point
+                    if (filteredSuppliers.length > 0) {
+                        filteredSearch();
+                        console.log(`filtered search`);
+                    }
                 })
             });
         }

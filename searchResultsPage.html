@@ -9,6 +9,10 @@
     <meta name="author" content="Your Name">
     <title>Your Page Title</title>
     <style>
+        html {
+            color-scheme: light dark;
+        }
+
         * {
             box-sizing: border-box;
             font-size: 16px;
@@ -86,6 +90,21 @@
             appearance: none;
             border: 0;
             margin-right: 50px;
+        }
+
+        #searchResultsPageHeaderCartQuantityIconDivId {
+            position: absolute;
+            top: 35%;
+            left: 27.5%;
+            background-color: rgb(92, 182, 56);
+            color: white;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.4rem;
         }
 
         .searchResultsPageCartImg {
@@ -262,6 +281,7 @@
             </div>
             <button class="searchResultsPageHeaderCartButtonClass">
                 <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
+                <div id="searchResultsPageHeaderCartQuantityIconDivId">0</div>
             </button>
         </div>
         <div class="searchResultsPageMainDiv">
@@ -314,7 +334,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                             <button>-</button>
-                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
+                            <span class="searchResultsPageProductQuantitySpanClass">1</span>
                             <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -484,7 +504,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                             <button>-</button>
-                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
+                            <span class="searchResultsPageProductQuantitySpanClass">1</span>
                             <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -556,6 +576,9 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let product;
 
+        //update the cart quantity icon
+        document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
+
         //check the quantity span with the id we want, get that number after add to 
         //cart press
         //on add to cart button class click
@@ -572,7 +595,7 @@
                 event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText++;
             }
 
-            if (event.target.innerText === '-' && event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 0) {
+            if (event.target.innerText === '-' && event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 1) {
 
                 event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText--;
             }
@@ -609,10 +632,18 @@
                 }
 
                 console.log(cart);
+
                 // Save the updated cart to localStorage
                 localStorage.setItem('cart', JSON.stringify(cart));
-                alert(`You now have a total of ${product.quantity} of ${product.name} in your cart`);
+
+                //update the cart quantity icon
+                document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
             }
+        });
+
+        //on cart button click
+        document.querySelector('.searchResultsPageHeaderCartButtonClass').addEventListener('click', function () {
+            window.location.href = 'cart.html';
         });
     </script>
 </body>

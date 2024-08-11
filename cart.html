@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your website description goes here">
+    <meta name="keywords" content="your, website, keywords, go, here">
+    <meta name="author" content="Your Name">
+    <title>Your Website Title</title>
+</head>
+<body>
+    <div id="cartPageCartContentsDivId">cart contents:</div>
+
+    <script>
+        // Get the cart items from local storage
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        document.getElementById('cartPageCartContentsDivId').innerText = JSON.stringify(cart);
+    </script>
+</body>
+</html>

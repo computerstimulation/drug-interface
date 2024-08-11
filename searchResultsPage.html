@@ -562,7 +562,7 @@
         //use event delegation to add an event listener on the common ancestor element 
         //of
         //all add to cart buttons
-        document.getElementById('searchResultsPageResultsDivId').addEventListener('click', function (event) {
+        document.getElementById('searchResultsPageResultsDivId').addEventListener('click', async function (event) {
             //console.log(event);
 
             //if click on quantity buttons then adjust quantity
@@ -594,7 +594,13 @@
                     //well we found the object so object.property = 
                     product.quantity = event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText;
                 } else if (!product) {
+                    let { data: pharmology_product_table, error } = await supabaseClient
+                        .from('pharmology_product_table')
+                        .select('product_name_column')
+                        .eq('id', event.target.dataset.addtocartid)
+
                     product = {
+                        name: pharmology_product_table[0].product_name_column,
                         id: event.target.dataset.addtocartid,
                         quantity: event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText
                     };
@@ -603,6 +609,7 @@
                 }
 
                 console.log(cart);
+                alert(`You now have ${product.quantity} of ${product.name} in your cart`);
             }
         });
     </script>

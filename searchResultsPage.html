@@ -36,10 +36,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 50px;
+            height: ;
+            padding: 14px 10px;
         }
 
-        .searchResultsPageLogoDiv {}
+        .searchResultsPageLogoDiv {
+            display: flex;
+            align-items: center;
+        }
 
         .searchResultsPageLogoDiv img {
             width: 50px;
@@ -52,20 +56,20 @@
         }
 
         .searchResultsPageSearchInput {
-            width: 100%;
+            width: 500px;
             min-height: 60%;
             appearance: none;
             border: none;
-            border-radius: 5px 0 0 5px;
-            padding: 10px;
+            border-radius: 40px 0 0 40px;
+            padding: 10px 10px 10px 32.5px;
         }
 
         .searchResultsPageSearchButton {
             border: none;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 40px 40px 0;
             background-color: #223e62;
             cursor: pointer;
-            padding: 10px;
+            padding: 10px 50px;
         }
 
         .searchResultsPageSearchButton img {
@@ -74,9 +78,20 @@
             color: white;
         }
 
+        .searchResultsPageHeaderCartButtonClass {
+            background-color: transparent;
+            position: relative;
+            z-index: 0;
+            appearance: none;
+            border: 0;
+            margin-right: 50px;
+        }
+
         .searchResultsPageCartImg {
             width: 50px;
             height: 50px;
+            z-index: -1;
+            position: relative;
         }
 
         .searchResultsPageMainDiv {
@@ -213,7 +228,7 @@
     <div class="searchResultsPageDiv">
         <div class="searchResultsPageHeaderDiv">
             <div class="searchResultsPageLogoDiv">
-                <img src="/images/Pharmology 2.svg" alt="Pharmology logo">
+                <img src="/images/logo.png" alt="Pharmology logo">
             </div>
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
@@ -221,7 +236,9 @@
                 <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
                         src="/svg/search.svg"></button>
             </div>
-            <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
+            <button class="searchResultsPageHeaderCartButtonClass">
+                <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
+            </button>
         </div>
         <div class="searchResultsPageMainDiv">
             <div class="searchResultsPageFilterDiv">
@@ -272,12 +289,12 @@
                     <div class="searchResultsPageProductImageDivClass">
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
-                        <button>-</button>
-                        <span id="searchResultsPageProductQuantitySpanId">0</span>
-                        <button>+</button>
+                            <button>-</button>
+                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
+                            <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
-                            <button>Ajouter à Commande</button>
+                            <button class="addToCartButtonClass" data-addToCartId="${product.id}">Ajouter à Commande</button>
                         </div>
                     </div>
                     <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
@@ -290,26 +307,6 @@
                 </div>
                 <br>
                 `;
-            });
-
-            //add event listeners to listen to quantity button presses and adjust the quantity
-            //of the intended product as well as change the quantity span to reflect
-            //the new quantity
-            document.querySelectorAll('.searchResultsPageProductQuantityButtonsDivClass button').forEach((button) => {
-                button.addEventListener('click', (event) => {
-                    let quantitySpan = button.parentElement.querySelector('#searchResultsPageProductQuantitySpanId');
-                    let quantity = parseInt(quantitySpan.innerText);
-
-                    if (button.innerText === '+') {
-                        quantity++;
-                    }
-
-                    if (button.innerText === '-' && quantity > 0) {
-                        quantity--;
-                    }
-
-                    quantitySpan.innerText = quantity;
-                });
             });
 
             //add all the searchQuerySuppliers to the filteredSuppliers array as in the beginning
@@ -461,12 +458,12 @@
                     <div class="searchResultsPageProductImageDivClass">
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
-                        <button>-</button>
-                        <span id="searchResultsPageProductQuantitySpanId">0</span>
-                        <button>+</button>
+                            <button>-</button>
+                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
+                            <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
-                            <button>Ajouter à Commande</button>
+                            <button class="addToCartButtonClass" data-addToCartId="${product.id}">Ajouter à Commande</button>
                         </div>
                     </div>
                     <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
@@ -479,26 +476,6 @@
                 </div>
                 <br>
                 `;
-            });
-
-            //add event listeners to listen to quantity button presses and adjust the quantity
-            //of the intended product as well as change the quantity span to reflect
-            //the new quantity
-            document.querySelectorAll('.searchResultsPageProductQuantityButtonsDivClass button').forEach((button) => {
-                button.addEventListener('click', (event) => {
-                    let quantitySpan = button.parentElement.querySelector('#searchResultsPageProductQuantitySpanId');
-                    let quantity = parseInt(quantitySpan.innerText);
-
-                    if (button.innerText === '+') {
-                        quantity++;
-                    }
-
-                    if (button.innerText === '-' && quantity > 0) {
-                        quantity--;
-                    }
-
-                    quantitySpan.innerText = quantity;
-                });
             });
         };
 
@@ -548,6 +525,60 @@
             //perform a new search
             searchProducts();
         })
+
+        //create a cart array
+        let cart = [];
+        let product;
+
+        //check the quantity span with the id we want, get that number after add to 
+        //cart press
+        //on add to cart button class click
+        //use event delegation to add an event listener on the common ancestor element 
+        //of
+        //all add to cart buttons
+        document.getElementById('searchResultsPageResultsDivId').addEventListener('click', function (event) {
+            //console.log(event);
+
+            //if click on quantity buttons then adjust quantity
+            if (event.target.innerText === '+') {
+
+                //add 1 to the quantity span in the same div
+                event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText++;
+            }
+
+            if (event.target.innerText === '-' && event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 0) {
+
+                event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText--;
+            }
+
+            if (event.target.className === 'addToCartButtonClass') {
+
+                //if there is already a product with the same id in the cart then
+                //just update the quantity
+                //otherwise 
+
+                //find the first product with the same product id
+                //and assign it a variable
+                product = cart.find((product) => product.id === event.target.dataset.addtocartid)
+
+                if (product) {
+
+                    //if found then update the quantity
+                    //how do you just update the quantity property of an object
+                    //well we found the object so object.property = 
+                    product.quantity = event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText;
+                } else if (!product) {
+                    product = {
+                        id: event.target.dataset.addtocartid,
+                        quantity: event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText
+                    };
+
+                    cart.push(product);
+                }
+
+                console.log(cart);
+            }
+        });
     </script>
 </body>
 

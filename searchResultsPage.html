@@ -552,8 +552,8 @@
             searchProducts();
         })
 
-        //create a cart array
-        let cart = [];
+        // Load cart from localStorage when the page loads
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let product;
 
         //check the quantity span with the id we want, get that number after add to 
@@ -609,6 +609,8 @@
                 }
 
                 console.log(cart);
+                // Save the updated cart to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
                 alert(`You now have a total of ${product.quantity} of ${product.name} in your cart`);
             }
         });

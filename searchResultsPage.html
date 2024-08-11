@@ -193,6 +193,7 @@
             color: white;
             border-radius: 50px;
             border: 0;
+            font-size: 10px;
         }
 
         .searchResultsPageProductNameDiv {
@@ -213,6 +214,9 @@
 
         .searchResultsPageProductPriceDiv {
             border-bottom: 1px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .searchResultsPageProductSupplierDiv {}
@@ -299,6 +303,7 @@
                     </div>
                     <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
                     <div class="searchResultsPageProductPriceAndSupplierDiv">
+                        <span class="searchResultsPageProductPriceSpanClass">Prix</span>
                         <div class="searchResultsPageProductPriceDiv">${product.price} DT</div>
                         <div class="searchResultsPageProductSupplierDiv">
                             <img src="${product.supplier_logo_url_column}">
@@ -468,6 +473,7 @@
                     </div>
                     <div class="searchResultsPageProductNameDiv">${product.product_name_column}</div>
                     <div class="searchResultsPageProductPriceAndSupplierDiv">
+                        <span class="searchResultsPageProductPriceSpanClass">Prix</span>
                         <div class="searchResultsPageProductPriceDiv">${product.price} DT</div>
                         <div class="searchResultsPageProductSupplierDiv">
                             <img src="${product.supplier_logo_url_column}">

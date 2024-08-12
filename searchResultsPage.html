@@ -10,7 +10,6 @@
     <title>Your Page Title</title>
     <style>
         html {
-            color-scheme: light dark;
         }
 
         * {
@@ -400,6 +399,7 @@
 
                         console.log(`checkbox unchecked`);
 
+                        //remove the supplier as it was unselected
                         if (filteredSuppliers.includes(checkbox.value)) {
                             filteredSuppliers = filteredSuppliers.filter((supplier) => supplier !== checkbox.value);
                             console.log(`checkbox unchecked new selection: ${filteredSuppliers}`);
@@ -407,9 +407,12 @@
 
                         //if this is the last checkbox unchecked then we need to not add
                         //all suppliers back to the filteredSuppliers because w
+                        //when all checkboxes have been unchecked then the filtered suppliers would be 0
+                        //which means we could execute the following function which does search all
+                        //products but does not do a filtered search function which takes into account
+                        //filtered suppliers. instead in the new search function we search all suppliers
+                        //without adding them to the filtered suppliers functionality
                         if (filteredSuppliers.length === 0) {
-                            filteredSuppliers = searchQuerySuppliers;
-                            console.log(searchQuerySuppliers);
 
                             //new search
                             searchProducts();
@@ -426,6 +429,10 @@
                     //since we cleared the filtered suppliers array in the new search which was invoked 
                     //when the filtered suppliers was empty the unchecking of the last box would exit
                     //before this point
+
+                    //this function is useful because we need to do a filtered search when there are
+                    //selected suppliers and when there are no selected suppliers we do a new search
+                    //instead
                     if (filteredSuppliers.length > 0) {
                         filteredSearch();
                         console.log(`filtered search`);

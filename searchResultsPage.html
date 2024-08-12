@@ -333,7 +333,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                             <button>-</button>
-                            <span class="searchResultsPageProductQuantitySpanClass">1</span>
+                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
                             <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -535,7 +535,7 @@
                         <img src="${product.product_image_url_column}" class="searchResultsPageProductImage">
                         <div class="searchResultsPageProductQuantityButtonsDivClass">
                             <button>-</button>
-                            <span class="searchResultsPageProductQuantitySpanClass">1</span>
+                            <span class="searchResultsPageProductQuantitySpanClass">0</span>
                             <button>+</button>
                         </div>
                         <div class="searchResultsPageProductAddToCartButtonClass">
@@ -626,7 +626,7 @@
                 event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText++;
             }
 
-            if (event.target.innerText === '-' && event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 1) {
+            if (event.target.innerText === '-' && event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 0) {
 
                 event.target.closest('.searchResultsPageProductQuantityButtonsDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText--;
             }

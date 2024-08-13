@@ -47,7 +47,7 @@
             position: relative;
             background-color: transparent;
             appearance: none;
-            border: 0; 
+            border: 0;
             z-index: 0;
         }
 
@@ -675,6 +675,16 @@
 
             if (event.target.className === 'addToCartButtonClass') {
 
+                //remove products from cart
+                //if the quantity span is 0 and there is already a product in the cart then remove that product
+                //from the cart
+                if (event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText == 0) {
+
+                    //remove the product from the cart
+                    cart = cart.filter((product) => product.id !== event.target.dataset.addtocartid);
+                }
+
+                //add products to cart
                 //if there is already a product with the same id in the cart then
                 //just update the quantity
                 //otherwise 
@@ -683,13 +693,17 @@
                 //and assign it a variable
                 product = cart.find((product) => product.id === event.target.dataset.addtocartid)
 
-                if (product) {
+                //if there is a product and the quantity span is greater than 0
+                if (product && event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 0) {
 
                     //if found then update the quantity
                     //how do you just update the quantity property of an object
                     //well we found the object so object.property = 
                     product.quantity = event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText;
-                } else if (!product) {
+                }
+
+                //if no product is found in the cart and the quantity span is greater than 0
+                else if (!product && event.target.closest('.searchResultsPageProductImageDivClass').querySelector('.searchResultsPageProductQuantitySpanClass').innerText > 0) {
                     let { data: pharmology_product_table, error } = await supabaseClient
                         .from('pharmology_product_table')
                         .select('product_name_column')

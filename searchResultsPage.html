@@ -9,8 +9,7 @@
     <meta name="author" content="Your Name">
     <title>Your Page Title</title>
     <style>
-        html {
-        }
+        html {}
 
         * {
             box-sizing: border-box;
@@ -269,9 +268,9 @@
 <body>
     <div class="searchResultsPageDiv">
         <div class="searchResultsPageHeaderDiv">
-            <div class="searchResultsPageLogoDiv">
+            <button class="searchResultsPageLogoDiv">
                 <img src="/images/logo.png" alt="Pharmology logo">
-            </div>
+            </button>
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
                     placeholder="Rechercher Medicament">
@@ -483,6 +482,23 @@
             );
             console.log(`merged search data with removed duplicates: ${regularPlusFuzzySearchResults}`);
 
+            //after merging the arrays (search results from two different search methods) we need to check
+            //if the search term matches a search results (product name column) exactly
+            //if it does then we only display that product
+            //the way we do this is by making our regular plus fuzzy search results array only include that product
+            //so we will have to remove everything else
+            //so we will compare the search query to the array and 
+            //first we declare a variable with the new array then use it if we want
+            let exactSearchResults = regularPlusFuzzySearchResults.filter((product) => {
+                return product.product_name_column.toLowerCase() === searchQuery.toLowerCase();
+            });
+
+            //if exactSearchResults is empty then we will not use it (do nothing)
+            //if exactSearchResults has results inside it then we will assign regular... to it
+            if (exactSearchResults.length > 0) {
+                regularPlusFuzzySearchResults = exactSearchResults;
+            }
+
             //list the results
             listResults(regularPlusFuzzySearchResults);
         }
@@ -512,6 +528,23 @@
             regularPlusFuzzySearchResults = Array.from(
                 new Map(regularPlusFuzzySearchResults.map(item => [item.id, item])).values()
             );
+
+            //after merging the arrays (search results from two different search methods) we need to check
+            //if the search term matches a search results (product name column) exactly
+            //if it does then we only display that product
+            //the way we do this is by making our regular plus fuzzy search results array only include that product
+            //so we will have to remove everything else
+            //so we will compare the search query to the array and 
+            //first we declare a variable with the new array then use it if we want
+            let exactSearchResults = regularPlusFuzzySearchResults.filter((product) => {
+                return product.product_name_column.toLowerCase() === searchQuery.toLowerCase();
+            });
+
+            //if exactSearchResults is empty then we will not use it (do nothing)
+            //if exactSearchResults has results inside it then we will assign regular... to it
+            if (exactSearchResults.length > 0) {
+                regularPlusFuzzySearchResults = exactSearchResults;
+            }
 
             //filter the results
             let filteredResults = regularPlusFuzzySearchResults.filter((product) => {
@@ -607,7 +640,7 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let product;
 
-        //update the cart quantity icon
+        //update the cart quantity icon on page load
         document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
 
         //check the quantity span with the id we want, get that number after add to 

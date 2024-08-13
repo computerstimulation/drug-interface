@@ -482,7 +482,7 @@
             );
             console.log(`merged search data with removed duplicates: ${regularPlusFuzzySearchResults}`);
 
-            //after merging the arrays (search results from two different search methods) we need to check
+            /*//after merging the arrays (search results from two different search methods) we need to check
             //if the search term matches a search results (product name column) exactly
             //if it does then we only display that product
             //the way we do this is by making our regular plus fuzzy search results array only include that product
@@ -497,7 +497,7 @@
             //if exactSearchResults has results inside it then we will assign regular... to it
             if (exactSearchResults.length > 0) {
                 regularPlusFuzzySearchResults = exactSearchResults;
-            }
+            }*/
 
             //list the results
             listResults(regularPlusFuzzySearchResults);
@@ -518,7 +518,7 @@
                     table_name: 'pharmology_product_table',
                     column_name: 'product_name_column',
                     search_term: searchQuery,  // Your search term
-                    similarity_threshold: 0.5  // Your desired threshold
+                    similarity_threshold: 0.2  // Your desired threshold
                 });
 
             //merge the datasets (search results)
@@ -529,7 +529,7 @@
                 new Map(regularPlusFuzzySearchResults.map(item => [item.id, item])).values()
             );
 
-            //after merging the arrays (search results from two different search methods) we need to check
+            /*//after merging the arrays (search results from two different search methods) we need to check
             //if the search term matches a search results (product name column) exactly
             //if it does then we only display that product
             //the way we do this is by making our regular plus fuzzy search results array only include that product
@@ -544,7 +544,7 @@
             //if exactSearchResults has results inside it then we will assign regular... to it
             if (exactSearchResults.length > 0) {
                 regularPlusFuzzySearchResults = exactSearchResults;
-            }
+            }*/
 
             //filter the results
             let filteredResults = regularPlusFuzzySearchResults.filter((product) => {

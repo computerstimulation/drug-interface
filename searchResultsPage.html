@@ -43,14 +43,19 @@
             padding: 14px 10px;
         }
 
-        .searchResultsPageLogoDiv {
-            display: flex;
-            align-items: center;
+        .searchResultsPageLogoButtonClass {
+            position: relative;
+            background-color: transparent;
+            appearance: none;
+            border: 0; 
+            z-index: 0;
         }
 
-        .searchResultsPageLogoDiv img {
+        .searchResultsPageLogoButtonClass img {
             width: 50px;
             height: 50px;
+            z-index: -1;
+            position: relative;
         }
 
         .searchResultsPageSearchDiv {
@@ -73,12 +78,16 @@
             background-color: #223e62;
             cursor: pointer;
             padding: 10px 50px;
+            position: relative;
+            z-index: 0;
         }
 
         .searchResultsPageSearchButton img {
             width: 20px;
             height: 20px;
             color: white;
+            position: relative;
+            z-index: -1;
         }
 
         .searchResultsPageHeaderCartButtonClass {
@@ -268,7 +277,7 @@
 <body>
     <div class="searchResultsPageDiv">
         <div class="searchResultsPageHeaderDiv">
-            <button class="searchResultsPageLogoDiv">
+            <button class="searchResultsPageLogoButtonClass">
                 <img src="/images/logo.png" alt="Pharmology logo">
             </button>
             <div class="searchResultsPageSearchDiv">
@@ -703,6 +712,11 @@
                 //update the cart quantity icon
                 document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
             }
+        });
+
+        //on searchResultsPageLogoButtonClass click go to searchProductsPage.html
+        document.querySelector('.searchResultsPageLogoButtonClass').addEventListener('click', function () {
+            window.location.href = '/searchProductsPage.html';
         });
     </script>
 </body>

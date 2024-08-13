@@ -246,16 +246,17 @@
             border-left: 1px solid black;
             border-right: 1px solid black;
             height: 100%;
-            width: 100%;
             display: flex;
             align-items: center;
             justify-content: left;
             padding-left: 10px;
+            flex-grow: 1;
         }
 
         .searchResultsPageProductPriceAndSupplierDiv {
             display: flex;
             flex-direction: column;
+            width: 300px;
         }
 
         .searchResultsPageProductPriceDiv {
@@ -263,9 +264,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
 
-        .searchResultsPageProductSupplierDiv {}
+        .searchResultsPageProductPriceSpanClass {
+        }
+
+        .searchResultsPageProductSupplierDiv {
+            align-self: center;
+        }
 
         .searchResultsPageProductSupplierDiv img {
             width: 50px;

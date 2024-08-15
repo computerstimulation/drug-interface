@@ -287,7 +287,7 @@
             <!-- Cart items will be displayed here -->
         </div>
         <div id="cartPageTotalDivId">
-            Total TTC<span>140 DT</span>
+            Total TTC<span id="cartPageTotalPriceSpanId"></span>
         </div>
         <button id="cartPageCheckoutButtonId">Commander</button>
     </div>
@@ -394,6 +394,10 @@
             </div>
             `
             });
+
+            //display the total price
+            document.getElementById('cartPageTotalPriceSpanId').innerText = updatedCart.reduce((acc, item) => acc + (item.price * item.quantity), 0) + ' DT';
+        
         };
 
         //remove the product from the local cart on garbage icon click then updated the cart

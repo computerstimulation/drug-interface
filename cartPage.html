@@ -359,7 +359,7 @@
         </div>
     </div>
     <div class="cartPageFooterDivClass">
-        © 2024 - MyPharmology
+        © 2024 - MyPharmology™
     </div>
     <dialog id="cartPageCheckoutDialogId">
         <div id="cartPageCheckoutDialogInnerContainerDivId">
@@ -443,6 +443,16 @@
 
         //create a function to display the cart items
         function displayNewCart() {
+
+            //console.log(`Unsorted array: ${JSON.stringify(updatedCart, null, 2)}`);
+            //first re-order the cart items in the updated cart array alphabetically
+            // Re-order the cart items in the updated cart array alphabetically by 'name'
+            updatedCart.sort((a, b) => {
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+                return 0;
+            });
+            //console.log(`sorted array: ${JSON.stringify(updatedCart, null, 2)}`);
 
             //first clear the cart display
             document.getElementById('cartPageCartContentsDivId').innerText = '';
@@ -555,7 +565,7 @@
                 getProducts();
             }
 
-            if (event.target.innerText === '-') {
+            if (event.target.innerText === '-' && Number(event.target.closest('.cartPageProductDivClass').querySelector('.cartPageProductQuantityInputClass').value) > 1) {
 
                 //get the product id of the
                 let productId = event.target.closest('.cartPageProductDivClass').getAttribute('data-productId');

@@ -622,6 +622,20 @@
             document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
         }
         updateHeaderCartIconQuantity();
+
+        //redirect to search results page on search
+        // Event listener for the Enter key press
+        document.getElementById('searchResultsPageSearchInputId').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                let searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+                window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+            }
+        });
+
+        document.getElementById('searchResultsPageSearchButtonId').addEventListener('click', function () {
+            let searchQuery = document.getElementById('searchResultsPageSearchButtonId').value;
+            window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+        });
     </script>
 </body>
 

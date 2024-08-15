@@ -519,7 +519,10 @@
                 //display the updated cart items
                 getProducts();
 
-                console.log(cart);
+                //console.log(cart);
+
+                updateHeaderCartIconQuantity();
+
             };
         });
 
@@ -613,6 +616,12 @@
         document.getElementById('cartPageCheckoutDialogCancelButtonId').addEventListener('click', () => {
             document.getElementById('cartPageCheckoutDialogId').close();
         });
+
+        //make cart icon quantity span display the quantity of unique items in the cart
+        function updateHeaderCartIconQuantity() {
+            document.getElementById('searchResultsPageHeaderCartQuantityIconDivId').innerText = cart.length;
+        }
+        updateHeaderCartIconQuantity();
     </script>
 </body>
 

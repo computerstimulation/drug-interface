@@ -19,6 +19,10 @@
             margin: 0;
             box-sizing: border-box;
             font-size: 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;   
         }
 
         button {
@@ -262,34 +266,45 @@
             width: 75%;
             justify-self: right;
         }
+
+        .cartPageFooterDivClass {
+            background-color: #d9d9d9;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="searchResultsPageHeaderDiv">
-        <button class="searchResultsPageLogoButtonClass">
-            <img src="/svg/logo.svg" alt="Pharmology logo">
-        </button>
-        <div class="searchResultsPageSearchDiv">
-            <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
-                placeholder="Rechercher Medicament">
-            <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
-                    src="/images/search.png"></button>
+    <div class="cartPageBodyDivClass">
+        <div class="searchResultsPageHeaderDiv">
+            <button class="searchResultsPageLogoButtonClass">
+                <img src="/svg/logo.svg" alt="Pharmology logo">
+            </button>
+            <div class="searchResultsPageSearchDiv">
+                <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
+                    placeholder="Rechercher Medicament">
+                <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
+                        src="/images/search.png"></button>
+            </div>
+            <button class="searchResultsPageHeaderCartButtonClass">
+                <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
+                <div id="searchResultsPageHeaderCartQuantityIconDivId">0</div>
+            </button>
         </div>
-        <button class="searchResultsPageHeaderCartButtonClass">
-            <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
-            <div id="searchResultsPageHeaderCartQuantityIconDivId">0</div>
-        </button>
+        <h1>Commande</h1>
+        <div id="cartPageCartDivId">
+            <div id="cartPageCartContentsDivId">
+                <!-- Cart items will be displayed here -->
+            </div>
+            <div id="cartPageTotalDivId">
+                Total TTC<span id="cartPageTotalPriceSpanId"></span>
+            </div>
+            <button id="cartPageCheckoutButtonId">Commander</button>
+        </div>
     </div>
-    <h1>Commande</h1>
-    <div id="cartPageCartDivId">
-        <div id="cartPageCartContentsDivId">
-            <!-- Cart items will be displayed here -->
-        </div>
-        <div id="cartPageTotalDivId">
-            Total TTC<span id="cartPageTotalPriceSpanId"></span>
-        </div>
-        <button id="cartPageCheckoutButtonId">Commander</button>
+    <div class="cartPageFooterDivClass">
+        © 2024 - MyPharmology
     </div>
 
     <script src="/script.js"></script>
@@ -380,7 +395,7 @@
                     ${product.price} DT
                     <div class="cartPageProductQuantityButtonsDivClass">
                         <button>-</button>
-                        <input readonly type="number" value="${product.quantity}">
+                        <input class="cartPageProductQuantityInputClass" readonly type="number" value="${product.quantity}">
                         <button>+</button>
                     </div>
                     ${product.price * product.quantity} DT
@@ -397,7 +412,7 @@
 
             //display the total price
             document.getElementById('cartPageTotalPriceSpanId').innerText = updatedCart.reduce((acc, item) => acc + (item.price * item.quantity), 0) + ' DT';
-        
+
         };
 
         //remove the product from the local cart on garbage icon click then updated the cart
@@ -437,6 +452,82 @@
         function clearCart() {
             localStorage.removeItem('cart');
             getProducts();
+        }
+
+        //increase the product quantity on + click
+        //decrease the product quantity on - click
+        //add event listener to the common ancestor
+        document.addEventListener('click', event => {
+            if (event.target.innerText === '+') {
+
+                //get the product id of the
+                let productId = event.target.closest('.cartPageProductDivClass').getAttribute('data-productId');
+                console.log(productId);
+
+                //increase the visual quantity span cartPageProductQuantityInputClass
+                let quantitySpan = event.target.closest('.cartPageProductDivClass').querySelector('.cartPageProductQuantityInputClass');
+                quantitySpan.value = Number(quantitySpan.value) + 1;
+
+                //update the local cart with the new quantity
+                //get the local cart from local storage
+                getLocalCartFromLocalStorage();
+
+                //update the relevant product
+                //find the item with the id property === productId
+                //convert cart quantity to number then perform operation
+                console.log(cart);
+
+                //convert cart item quantity to number
+                cart = cart.map(item => {
+                    if (item.id === productId) {
+                        item.quantity = Number(item.quantity) + 1;
+                    }
+                    return item;
+                });
+
+                //push the updated cart to local storage
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                getProducts();
+            }
+
+            if (event.target.innerText === '-') {
+
+                //get the product id of the
+                let productId = event.target.closest('.cartPageProductDivClass').getAttribute('data-productId');
+                console.log(productId);
+
+                //decrease the visual quantity span cartPageProductQuantityInputClass
+                let quantitySpan = event.target.closest('.cartPageProductDivClass').querySelector('.cartPageProductQuantityInputClass');
+                quantitySpan.value = Number(quantitySpan.value) - 1;
+
+                //update the local cart with the new quantity
+                //get the local cart from local storage
+                getLocalCartFromLocalStorage();
+
+                //update the relevant product
+                //find the item with the id property === productId
+                //convert cart quantity to number then perform operation
+                console.log(cart);
+
+                //convert cart item quantity to number
+                cart = cart.map(item => {
+                    if (item.id === productId) {
+                        item.quantity = Number(item.quantity) - 1;
+                    }
+                    return item;
+                });
+
+                //push the updated cart to local storage
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                getProducts();
+            };
+        });
+
+        //get local cart from local storage
+        function getLocalCartFromLocalStorage() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
         }
     </script>
 </body>

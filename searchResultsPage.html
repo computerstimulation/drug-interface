@@ -39,7 +39,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: ;
             padding: 14px 10px;
         }
 
@@ -287,7 +286,7 @@
     <div class="searchResultsPageDiv">
         <div class="searchResultsPageHeaderDiv">
             <button class="searchResultsPageLogoButtonClass">
-                <img src="/images/logo.png" alt="Pharmology logo">
+                <img src="/svg/logo.svg" alt="Pharmology logo">
             </button>
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
@@ -313,6 +312,7 @@
         </div>
     </div>
 
+    <script src="/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
@@ -740,11 +740,6 @@
         //on cart click go to cart page
         document.querySelector('.searchResultsPageHeaderCartButtonClass').addEventListener('click', function () {
             window.location.href = '/cartPage.html';
-        });
-
-        //on searchResultsPageLogoButtonClass click go to searchProductsPage.html
-        document.querySelector('.searchResultsPageLogoButtonClass').addEventListener('click', function () {
-            window.location.href = '/searchProductsPage.html';
         });
     </script>
 </body>

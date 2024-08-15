@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +8,433 @@
     <meta name="keywords" content="your, website, keywords, go, here">
     <meta name="author" content="Your Name">
     <title>Your Website Title</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: inter, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .searchResultsPageHeaderDiv {
+            background-color: #d7cece;
+            font-size: 16px;
+            color: black;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 10px;
+        }
+
+        .searchResultsPageLogoButtonClass {
+            position: relative;
+            background-color: transparent;
+            appearance: none;
+            border: 0;
+            z-index: 0;
+        }
+
+        .searchResultsPageLogoButtonClass img {
+            width: 50px;
+            height: 50px;
+            z-index: -1;
+            position: relative;
+        }
+
+        .searchResultsPageSearchDiv {
+            width: 50%;
+            display: flex;
+        }
+
+        .searchResultsPageSearchInput {
+            width: 500px;
+            min-height: 60%;
+            appearance: none;
+            border: none;
+            border-radius: 40px 0 0 40px;
+            padding: 10px 10px 10px 32.5px;
+        }
+
+        .searchResultsPageSearchButton {
+            border: none;
+            border-radius: 0 40px 40px 0;
+            background-color: #223e62;
+            cursor: pointer;
+            padding: 10px 50px;
+            position: relative;
+            z-index: 0;
+        }
+
+        .searchResultsPageSearchButton img {
+            width: 20px;
+            height: 20px;
+            color: white;
+            position: relative;
+            z-index: -1;
+        }
+
+        .searchResultsPageHeaderCartButtonClass {
+            background-color: transparent;
+            position: relative;
+            z-index: 0;
+            appearance: none;
+            border: 0;
+            margin-right: 50px;
+        }
+
+        #searchResultsPageHeaderCartQuantityIconDivId {
+            position: absolute;
+            top: 35%;
+            left: 27.5%;
+            background-color: rgb(92, 182, 56);
+            color: white;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.4rem;
+        }
+
+        .searchResultsPageCartImg {
+            width: 50px;
+            height: 50px;
+            z-index: -1;
+            position: relative;
+        }
+
+        h1 {
+            color: #223e62;
+            font-size: 2rem;
+            border-bottom: 2px solid #d9d9d9;
+            padding: 0 80px;
+            margin: 0;
+        }
+
+        #cartPageCartDivId {
+            width: 100%;
+            grid-template-rows: none;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border: 0;
+            padding: 50px 80px;
+        }
+
+        #cartPageCartContentsDivId {
+            grid-column-start: 1;
+            grid-column-end: 4;
+            margin-bottom: 30px;
+        }
+
+        .cartPageProductDivClass {
+            display: grid;
+            background-color: #d9d9d9;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cartPageProductCell1Class {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .cartPageProductImgClass {
+            width: 100px;
+            height: 100px;
+        }
+
+        .cartPageProductCell2Class {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            border-width: 0 2px;
+            border-style: solid;
+            border-color: black;
+        }
+
+        .cartPageProductQuantityButtonsDivClass {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            background-color: #223f62;
+            border-radius: 50px;
+            padding: 5px 5px;
+        }
+
+        .cartPageProductQuantityButtonsDivClass button {
+            background-color: #5db639;
+            color: #223e62;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cartPageProductQuantityButtonsDivClass input[type="number"] {
+            appearance: none;
+            border: none;
+            width: 50px;
+            text-align: center;
+            background-color: transparent;
+            color: white;
+        }
+
+        .cartPageProductQuantityButtonsDivClass input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cartPageProductCell3Class {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            position: relative;
+            z-index: 0;
+        }
+
+        .cartPageProductSupplierImgClass {
+            width: 100px;
+            height: 100px;
+        }
+
+        .cartPageProductCell3Class button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            border: 0;
+            position: relative;
+        }
+
+        .cartPageProductTrashImgClass {
+            width: 30px;
+            height: 30px;
+            position: relative;
+            z-index: -1;
+        }
+
+        #cartPageTotalDivId {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            color: #223f62;
+            border-bottom: 2px solid #223f62;
+            font-size: 1.8rem;
+        }
+
+        #cartPageTotalDivId span {
+            color: #ff0200;
+            font-size: 1.8rem;
+        }
+
+        #cartPageCheckoutButtonId {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 3;
+            grid-row-end: 4;
+            background-color: black;
+            color: white;
+            border-radius: 30px;
+            border: 0;
+            padding: 10px 20px;
+            width: 75%;
+            justify-self: right;
+        }
+    </style>
 </head>
+
 <body>
-    <div id="cartPageCartContentsDivId">cart contents:</div>
+    <div class="searchResultsPageHeaderDiv">
+        <button class="searchResultsPageLogoButtonClass">
+            <img src="/svg/logo.svg" alt="Pharmology logo">
+        </button>
+        <div class="searchResultsPageSearchDiv">
+            <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
+                placeholder="Rechercher Medicament">
+            <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
+                    src="/images/search.png"></button>
+        </div>
+        <button class="searchResultsPageHeaderCartButtonClass">
+            <img class="searchResultsPageCartImg" src="/svg/truck.svg" alt="Shopping cart">
+            <div id="searchResultsPageHeaderCartQuantityIconDivId">0</div>
+        </button>
+    </div>
+    <h1>Commande</h1>
+    <div id="cartPageCartDivId">
+        <div id="cartPageCartContentsDivId">
+            <!-- Cart items will be displayed here -->
+        </div>
+        <div id="cartPageTotalDivId">
+            Total TTC<span>140 DT</span>
+        </div>
+        <button id="cartPageCheckoutButtonId">Commander</button>
+    </div>
 
+    <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Get the cart items from local storage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        document.getElementById('cartPageCartContentsDivId').innerText = JSON.stringify(cart);
+        let cart;
+
+        //create new variable for updated cart data from supabase
+        let updatedCart = [];
+
+        //use the product ids in the cart to get all  product details from supabase
+        //create a new cart essentially with updated information and get that information
+        //using the ids in the old cart
+        //then display the new cart
+        const getProducts = async () => {
+
+            //get the cart items from local storage
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            console.log(cart);
+
+            //console log the data type of cart item ids
+            //console.log(typeof cart[0].id);
+
+            const { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select('*')
+                .in('id', cart.map(item => item.id));
+            console.log(`data: ${data}`);
+
+            //save the id, product_name_column, product_supplier_column of every item in the
+            //data array to the updatedCart variable
+            updatedCart = data.map(item => {
+                return {
+                    id: item.id,
+                    image: item.product_image_url_column,
+                    name: item.product_name_column,
+                    price: item.price,
+                    supplierImage: item.supplier_logo_url_column,
+                    supplier: item.product_supplier_column,
+                    quantity: 0
+                }
+            })
+            console.log(`updatedCart: ${updatedCart}`);
+
+            //convert all ids in cart array to numbers
+            cart.forEach(item => {
+                item.id = Number(item.id);
+            });
+
+            //give the objects in updatedCart a quantity property
+            updatedCart.forEach(item => {
+                const cartItem = cart.find(cartItem => cartItem.id === item.id);
+                if (cartItem) {
+                    // If cartItem is found, update the quantity
+                    item.quantity = cartItem.quantity;
+                } else {
+                    console.warn(`No matching cart item found for product ID: ${item.id}`);
+                }
+            });
+            /*console.log(updatedCart[0].id);
+            console.log(typeof updatedCart[0].id);
+            console.log(cart[0].id);
+            console.log(typeof cart[0].id);*/
+
+            displayNewCart();
+        }
+        getProducts();
+
+        //create a function to display the cart items
+        function displayNewCart() {
+
+            //first clear the cart display
+            document.getElementById('cartPageCartContentsDivId').innerText = '';
+            console.log(updatedCart);
+            updatedCart.forEach(product => {
+                document.getElementById('cartPageCartContentsDivId').innerHTML += `
+                        <div class="cartPageProductDivClass" data-productId="${product.id}">
+                <div class="cartPageProductCell1Class">
+                    <img class="cartPageProductImgClass"
+                        src="${product.image}"
+                        alt="">${product.name}
+                </div>
+                <div class="cartPageProductCell2Class">
+                    ${product.price} DT
+                    <div class="cartPageProductQuantityButtonsDivClass">
+                        <button>-</button>
+                        <input readonly type="number" value="${product.quantity}">
+                        <button>+</button>
+                    </div>
+                    ${product.price * product.quantity} DT
+                </div>
+                <div class="cartPageProductCell3Class">
+                    <img class="cartPageProductSupplierImgClass" src="${product.supplierImage}" alt="">
+                    <button class="cartPageProductTrashButtonClass">
+                        <img class="cartPageProductTrashImgClass" src="/svg/trash.svg">
+                    </button>
+                </div>
+            </div>
+            `
+            });
+        };
+
+        //remove the product from the local cart on garbage icon click then updated the cart
+        document.addEventListener('click', async (event) => {
+            if (event.target.classList.contains('cartPageProductTrashButtonClass')) {
+                console.log('trash button clicked');
+
+                //get the product id of the product to be deleted
+                event.target.closest('.cartPageProductDivClass').getAttribute('data-productId');
+                console.log(event.target.closest('.cartPageProductDivClass').getAttribute('data-productId'));
+
+                //convert the data-productId to a number
+                /*let numberProductId = Number(event.target.closest('.cartPageProductDivClass').getAttribute('data-productId'));*/
+
+                //get the cart from localStorage
+                //i don't know if the id is a number or string after json parsing
+                cart = JSON.parse(localStorage.getItem('cart'));
+
+                //find this product in the cart then update the cart by removing this product
+                //from the cart array then update the cart in the local storage then call
+                //getProducts()
+                cart = cart.filter(item => item.id !== event.target.closest('.cartPageProductDivClass').getAttribute('data-productId'));
+
+                //push the cart to local storage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                console.log(`cartaftergarbage ${cart}`);
+
+                //call getProducts() to get products from the local cart in the local storage
+                //(which we just updated) then update the cart with supabase information then
+                //display the updated cart items
+                getProducts();
+
+                console.log(cart);
+            };
+        });
+
+        function clearCart() {
+            localStorage.removeItem('cart');
+            getProducts();
+        }
     </script>
 </body>
+
 </html>

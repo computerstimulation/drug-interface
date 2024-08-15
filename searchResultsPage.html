@@ -147,11 +147,35 @@
             font-size: 1.5rem;
         }
 
-        .searchResultsPageFilterInnerDiv input[type="search"] {
-            width: 80%;
+        #searchResultsPageSupplierFilterSearchDivId {
+            display: flex;
+            position: relative;
+            z-index: 0;
+            position: relative;
+            z-index: 0;
+            background-color: #223e62;
             border-radius: 40px;
+        }
+
+        .searchResultsPageFilterInnerDiv input[type="search"] {
+            border-radius: 40px 0 0 40px;
             border: none;
             padding-left: 10px;
+        }
+
+        #searchResultsPageSupplierFilterSearchButtonId {
+            background-color: transparent;
+            border: 0;
+            border-radius: 0 40px 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #searchResultsPageSupplierFilterSearchButtonId img {
+            position: relative;
+            z-index: -1;
         }
 
         #searchResultsPageSuppliersFilterDiv {
@@ -304,7 +328,12 @@
                 <div class="searchResultsPageFilterInnerDiv" id="searchResultsPageFilterInnerDivId">
                     <span>Filter Par:</span>
                     <span>Fournisseur</span>
-                    <input class="searchResultsPageSupplierFilterSearchInputClass" type="search">
+                    <div id="searchResultsPageSupplierFilterSearchDivId">
+                        <input class="searchResultsPageSupplierFilterSearchInputClass" id="searchResultsPageSupplierFilterSearchInputId" type="search" size="7">
+                        <button id="searchResultsPageSupplierFilterSearchButtonId">
+                            <img src="/svg/search.svg">
+                        </button>
+                    </div>
                     <div id="searchResultsPageSuppliersFilterDiv"></div>
                 </div>
             </div>
@@ -326,6 +355,9 @@
         //who the user has chosen and add them to the array
         let filteredSuppliers = [];
 
+        //let available suppliers
+        let availableSuppliers = [];
+
         //define regularPlusFuzzyRawSearchResults = [];
         let regularPlusFuzzySearchResults = [];
 
@@ -342,6 +374,9 @@
                     searchQuerySuppliers.push(product.product_supplier_column);
                 }
                 console.log(searchQuerySuppliers);
+
+                //some products don't have images
+                //console.log(`error? ${product.product_image_url_column}`);
 
                 //create a product
                 document.getElementById('searchResultsPageResultsDivId').innerHTML += `
@@ -741,6 +776,15 @@
         document.querySelector('.searchResultsPageHeaderCartButtonClass').addEventListener('click', function () {
             window.location.href = '/cartPage.html';
         });
+
+        document.getElementById('searchResultsPageSupplierFilterSearchInputId').addEventListener('input', (event) => {
+            searchQuery = document.getElementById('searchResultsPageSupplierFilterSearchInputId').value;
+            console.log(searchQuery);
+
+            //see all the available suppliers
+            console.log(searchQuerySuppliers);
+
+        })
     </script>
 </body>
 

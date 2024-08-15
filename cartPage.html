@@ -608,6 +608,11 @@
         document.getElementById('cartPageCheckoutButtonId').addEventListener('click', () => {
             document.getElementById('cartPageCheckoutDialogId').showModal();
         });
+
+        //close the checkout modal on cancel button click
+        document.getElementById('cartPageCheckoutDialogCancelButtonId').addEventListener('click', () => {
+            document.getElementById('cartPageCheckoutDialogId').close();
+        });
     </script>
 </body>
 

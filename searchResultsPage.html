@@ -929,7 +929,7 @@
                 .select('product_name_column');
 
             data.forEach((product) => {
-                document.getElementById('searchResultsPageSearchResultsDatalistId').innerHTML += `<option value="${product.product_name_column}">`;
+                document.getElementById('searchResultsPageSearchResultsDatalistId').insertAdjacentHTML('beforeend', `<option value="${product.product_name_column}">`);
             });
         });
     </script>

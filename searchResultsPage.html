@@ -330,7 +330,8 @@
                     <span>Filter Par:</span>
                     <span>Fournisseur</span>
                     <div id="searchResultsPageSupplierFilterSearchDivId">
-                        <input class="searchResultsPageSupplierFilterSearchInputClass" id="searchResultsPageSupplierFilterSearchInputId" type="search" size="7">
+                        <input class="searchResultsPageSupplierFilterSearchInputClass"
+                            id="searchResultsPageSupplierFilterSearchInputId" type="search" size="7">
                         <button id="searchResultsPageSupplierFilterSearchButtonId">
                             <img src="/svg/search.svg">
                         </button>
@@ -374,7 +375,7 @@
                 if (!searchQuerySuppliers.includes(product.product_supplier_column)) {
                     searchQuerySuppliers.push(product.product_supplier_column);
                 }
-                console.log(searchQuerySuppliers);
+                //console.log(searchQuerySuppliers);
 
                 //some products don't have images
                 //console.log(`error? ${product.product_image_url_column}`);
@@ -426,7 +427,7 @@
             })
 
             //listen to filter change for this search query
-            document.querySelectorAll('.searchResultsPageSupplierFilterInputClass').forEach((checkbox) => {
+            /*document.querySelectorAll('.searchResultsPageSupplierFilterInputClass').forEach((checkbox) => {
                 checkbox.addEventListener('change', (event) => {
 
                     console.log(`list the filtered suppliers before the checkbox change: ${filteredSuppliers}`);
@@ -441,6 +442,7 @@
                         //has the item inside
                         //this is counterinuitive because when you remove the last checkbox you shouldn't get
                         //all items but instead no items hence why items should be checked on search
+                        //add item to filtered suppliers
                         if (!filteredSuppliers.includes(checkbox.value)) {
                             filteredSuppliers.push(checkbox.value);
                             console.log(`checkbox checked. new selected suppliers array: ${filteredSuppliers}`);
@@ -453,6 +455,7 @@
                         console.log(`checkbox unchecked`);
 
                         //remove the supplier as it was unselected
+                        //remove the item from filtered suppliers
                         if (filteredSuppliers.includes(checkbox.value)) {
                             filteredSuppliers = filteredSuppliers.filter((supplier) => supplier !== checkbox.value);
                             console.log(`checkbox unchecked new selection: ${filteredSuppliers}`);
@@ -491,7 +494,7 @@
                         console.log(`filtered search`);
                     }
                 })
-            });
+            });*/
         }
 
         //search products function (new search)
@@ -778,13 +781,117 @@
             window.location.href = '/cartPage.html';
         });
 
+        //listen to input on supplier filter search bar
         document.getElementById('searchResultsPageSupplierFilterSearchInputId').addEventListener('input', (event) => {
-            searchQuery = document.getElementById('searchResultsPageSupplierFilterSearchInputId').value;
-            console.log(searchQuery);
+            filterSearchQuery = document.getElementById('searchResultsPageSupplierFilterSearchInputId').value;
+            console.log(filterSearchQuery);
 
             //see all the available suppliers
+            console.log(searchQuerySuppliers);
+            console.log(filteredSuppliers);
 
-        })
+            //if there are no characters in the supplier search bar then list all search query suppliers
+            //first clear the supplier filters then relist the suppliers
+            if (filterSearchQuery.length === 0) {
+
+                //clear the supplier filters from the HTML
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML = '';
+
+                //relist the search query suppliers
+                searchQuerySuppliers.forEach((supplier) => {
+                    document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
+                });
+            }
+
+            let supplierSearchResults = searchQuerySuppliers.filter(element => element.toLowerCase().includes(filterSearchQuery.toLowerCase()));
+            console.log(`supplier search results ${supplierSearchResults}`);
+        });
+
+        //add an event listener to the HTML root element and listen for checkbox change events
+        //filter suppliers
+        document.addEventListener('change', (event) => {
+            if (event.target.className === 'searchResultsPageSupplierFilterInputClass') {
+                console.log(`click target ${event.target.value}`);
+
+                //what is the checkbox? every search resultspagesupplierfilterinput class
+                //we need to get the closest ancestor with an id? because not every checkbox has an
+                //event listener now it's just one common ancestor maybe the
+                //searchResultsPageSupplierFilterInputClass should have an id each because we need
+                //to get the value of the checkbox input we need all of this to be relatable to the
+                //event/event.target let's see if our searchResultsPageSupplierFilterInputClass
+                //already have identifiable ids? oh right we don't need them to have ids we just need
+                //to select them so we just take the value of the event.target? could checkbox just be
+                //event.target?
+                let checkbox = event.target;
+
+                //i think i may need to comment out the previous event listeners added to each
+                //searchResultsPageSupplierFilterInputClass node
+
+                console.log(`list the filtered suppliers before the checkbox change: ${filteredSuppliers}`);
+
+                //add an item when checked
+                if (checkbox.checked) {
+
+                    console.log(`checkbox checked`);
+
+                    //after adding back all items to the filteredSuppliers, it will include all checkboxes
+                    //this means the following condition won't work because the filteredSuppliers array already
+                    //has the item inside
+                    //this is counterinuitive because when you remove the last checkbox you shouldn't get
+                    //all items but instead no items hence why items should be checked on search
+                    //add item to filtered suppliers
+                    if (!filteredSuppliers.includes(checkbox.value)) {
+                        filteredSuppliers.push(checkbox.value);
+                        console.log(`checkbox checked. new selected suppliers array: ${filteredSuppliers}`);
+                    }
+                }
+
+                //remove the item when unchecked
+                if (!checkbox.checked) {
+
+                    console.log(`checkbox unchecked`);
+
+                    //remove the supplier as it was unselected
+                    //remove the item from filtered suppliers
+                    if (filteredSuppliers.includes(checkbox.value)) {
+                        filteredSuppliers = filteredSuppliers.filter((supplier) => supplier !== checkbox.value);
+                        console.log(`checkbox unchecked new selection: ${filteredSuppliers}`);
+                    }
+
+                    //if this is the last checkbox unchecked then we need to not add
+                    //all suppliers back to the filteredSuppliers because w
+                    //when all checkboxes have been unchecked then the filtered suppliers would be 0
+                    //which means we could execute the following function which does search all
+                    //products but does not do a filtered search function which takes into account
+                    //filtered suppliers. instead in the new search function we search all suppliers
+                    //without adding them to the filtered suppliers functionality
+                    if (filteredSuppliers.length === 0) {
+
+                        //new search
+                        searchProducts();
+
+                        //in the new search we cleared the filtered suppliers array
+                        console.log(`new search`);
+                    }
+
+                };
+
+                //invoke a new filtered search function which doesn't clear
+                //the filters only if the filtered suppliers is not empty
+
+                //since we cleared the filtered suppliers array in the new search which was invoked 
+                //when the filtered suppliers was empty the unchecking of the last box would exit
+                //before this point
+
+                //this function is useful because we need to do a filtered search when there are
+                //selected suppliers and when there are no selected suppliers we do a new search
+                //instead
+                if (filteredSuppliers.length > 0) {
+                    filteredSearch();
+                    console.log(`filtered search`);
+                }
+            };
+        });
     </script>
 </body>
 

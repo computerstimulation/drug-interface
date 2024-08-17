@@ -699,7 +699,7 @@
 
             //get the search query from the URL on page load
             searchQuery = new URLSearchParams(window.location.search).get('query');
-            console.log(searchQuery);
+            console.log(`search query: ${searchQuery}`);
 
             //update the search bar with the search query taken from the URL
             document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
@@ -725,9 +725,13 @@
             console.log(`all product names without duplicates: ${allProductNames}`);
 
             //fill the autocomplete suggestions array based on the initial search query so we don't
-            //have to wait for user to input letters to fill the array for the first time
-            searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
-            console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
+            //have to wait for user to input letters to fill the array for the first time only if
+            //there actually is a search query otherwise if the search query is empty we don't need
+            //autocomplete suggestions
+            if (searchQuery) {
+                searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
+                console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
+            };
         });
 
         //on user search take search query

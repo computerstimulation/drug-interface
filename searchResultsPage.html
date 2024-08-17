@@ -1132,6 +1132,12 @@
 
                 //search
                 searchProducts();
+
+                //update the searchResultsPageAutocompleteSuggestionsArray
+                searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
+
+                //fill the autocomplete div
+                fillAutocompleteDiv();
             }
         })
 

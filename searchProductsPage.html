@@ -63,7 +63,7 @@
             margin: 0 auto;
         }
 
-        .searching #searchProductsPageSearchAutocompleteDivId {
+        .autocompletingClass #searchProductsPageSearchAutocompleteDivId {
             display: block;
             overflow-y: scroll;
         }
@@ -131,14 +131,20 @@
                 //check if the searchProductsPageSearchInputId value is not empty
                 if (document.getElementById('searchProductsPageSearchInputId').value !== '') {
 
-                    //the autocomplete div should now be show
-                    //add .searching class to the document
-                    document.documentElement.classList.add('searching');
-
                     searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
 
                     let autocompleteSuggestions = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery));
                     console.log(autocompleteSuggestions);
+
+                    //the autocomplete div should now be show
+                    //add .autocompletingClass class to the document
+                    //only add the autocompleting class if there are autocomplete suggestions
+                    //if autocompleteSuggestions is not empty
+                    if (autocompleteSuggestions.length > 0) {
+                        document.documentElement.classList.add('autocompletingClass');
+                    } else if (autocompleteSuggestions.length === 0) {
+                        document.documentElement.classList.remove('autocompletingClass');
+                    }
 
                     document.getElementById('searchProductsPageSearchAutocompleteDivId').innerHTML = '';
 
@@ -152,8 +158,8 @@
                 //if the searchProductsPageSearchInputId value is empty
                 if (document.getElementById('searchProductsPageSearchInputId').value === '') {
 
-                    //remove the .searching class from the document
-                    document.documentElement.classList.remove('searching');
+                    //remove the .autocompletingClass class from the document
+                    document.documentElement.classList.remove('autocompletingClass');
                 }
             };
         });

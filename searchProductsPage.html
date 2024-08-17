@@ -297,8 +297,36 @@
                     //search input
                     document.getElementById('searchProductsPageSearchInputId').value = event.target.textContent;
 
+                    searchQuery = event.target.textContent;
+
                     //return the focus to the search bar input
                     document.getElementById('searchProductsPageSearchInputId').focus();
+                };
+            };
+        });
+
+        //let lastSearchQuery
+        //let lastSearchQuery = ``;
+
+        //add focus event listener to the document
+        document.addEventListener('focusin', function (event) {
+
+            //if the event target is an autocomplete suggestion
+            if (event.target.className === 'autocompleteItemDivClass') {
+
+                //add the text content of the autocomplete suggestion to the search input
+                document.getElementById('searchProductsPageSearchInputId').value = event.target.textContent;
+            };
+
+            //if the event target is the search input
+            if (event.target.id === 'searchProductsPageSearchInputId') {
+
+                //if there is a search query
+                if (searchQuery) {
+
+                    //return the text content of the search input to the search query
+                    document.getElementById('searchProductsPageSearchInputId').value = searchQuery;
+
                 };
             };
         });

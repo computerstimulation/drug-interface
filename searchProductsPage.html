@@ -13,9 +13,11 @@
             box-sizing: border-box;
             font-size: 16px;
         }
+
         body {
             margin: 0;
         }
+
         .searchProductsPageBody {
             background-color: #d7cece;
             font-size: 16px;
@@ -69,7 +71,8 @@
         <img src="/images/Pharmology 2.svg">
     </div>
     <input type="search" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
-        class="searchProductsPageSearchInput">
+        class="searchProductsPageSearchInput" list="searchProductsPageSearchDatalistId">
+    <datalist id="searchProductsPageSearchDatalistId"></datalist>
     <button id="searchProductsPageSearchButtonId" class="searchProductsPageRechercheButton">Recherche</button>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -89,6 +92,17 @@
         document.getElementById('searchProductsPageSearchButtonId').addEventListener('click', function () {
             let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
             window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+        });
+
+        //on page load get all product names from supabase and add them to the search results datalist
+        window.addEventListener('DOMContentLoaded', async function () {
+            const { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select('product_name_column');
+
+            data.forEach((product) => {
+                document.getElementById('searchProductsPageSearchDatalistId').insertAdjacentHTML('beforeend', `<option value="${product.product_name_column}">`);
+            });
         });
     </script>
 </body>

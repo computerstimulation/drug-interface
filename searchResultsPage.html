@@ -500,6 +500,9 @@
         //search products function (new search)
         async function searchProducts() {
 
+            //on new search clear supplier filter checkbox states object
+            supplierFiltersCheckedStatesObject = {};
+
             //but first clear the searchQuery suppliers in order to
             //make sure there are no leftover suppliers from the last search query
             //clear search query suppliers array

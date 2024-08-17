@@ -238,8 +238,8 @@
                 // Function to fetch and display drugs in the table
                 async function fetchAndDisplayDrugs() {
                     const { data, error } = await supabaseClient
-                        .from('drug_table')
-                        .select('id, drug_name_column, drug_supplier_column, drug_image_url_column');
+                        .from('pharmology_product_table')
+                        .select('id, product_name_column, product_supplier_column, product_image_url_column');
 
                     if (error) {
                         console.error('Error fetching data:', error);
@@ -249,16 +249,16 @@
                     resultsBody.innerHTML = '';
                     if (data.length > 0) {
                         data.forEach(drug => {
-                            const imageUrl = drug.drug_image_url_column || '';
+                            const imageUrl = drug.product_image_url_column || '';
                             const imageCell = imageUrl
-                                ? `<img src="${imageUrl}" alt="${drug.drug_name_column}" class="product-image">`
+                                ? `<img src="${imageUrl}" alt="${drug.product_name_column}" class="product-image">`
                                 : '';
 
                             const row = `
                                 <tr>
                                     <td class="checkbox-cell"><input type="checkbox" class="row-checkbox" data-drug-id="${drug.id}"></td>
-                                    <td><input type="text" class="drug-name" data-drug-id="${drug.id}" value="${drug.drug_name_column}"></td>
-                                    <td><input type="text" class="drug-supplier" data-drug-id="${drug.id}" value="${drug.drug_supplier_column}"></td>
+                                    <td><input type="text" class="drug-name" data-drug-id="${drug.id}" value="${drug.product_name_column}"></td>
+                                    <td><input type="text" class="drug-supplier" data-drug-id="${drug.id}" value="${drug.product_supplier_column}"></td>
                                     <td><input type="url" class="drug-image" data-drug-id="${drug.id}" value="${imageUrl}"></td>
                                 </tr>
                             `;
@@ -298,9 +298,9 @@
                 async function handleInputChange(event) {
                     const input = event.target;
                     const drugId = input.getAttribute('data-drug-id');
-                    const fieldName = input.classList.contains('drug-name') ? 'drug_name_column' :
-                        input.classList.contains('drug-supplier') ? 'drug_supplier_column' :
-                            input.classList.contains('drug-image') ? 'drug_image_url_column' : '';
+                    const fieldName = input.classList.contains('drug-name') ? 'product_name_column' :
+                        input.classList.contains('drug-supplier') ? 'product_supplier_column' :
+                            input.classList.contains('drug-image') ? 'product_image_url_column' : '';
 
                     if (!drugId || !fieldName) return;
 
@@ -308,7 +308,7 @@
 
                     // Update the specific drug record in the database
                     const { data: updatedData, error: updateError } = await supabaseClient
-                        .from('drug_table')
+                        .from('pharmology_product_table')
                         .update(updateField)
                         .eq('id', parseInt(drugId));
 
@@ -343,26 +343,26 @@
 
                     // Fetch existing drug names to ensure uniqueness
                     const { data: existingData, error: fetchError } = await supabaseClient
-                        .from('drug_table')
-                        .select('drug_name_column');
+                        .from('pharmology_product_table')
+                        .select('product_name_column');
 
                     if (fetchError) {
                         console.error('Error fetching existing drug names:', fetchError.message);
                         return;
                     }
 
-                    const existingNames = existingData.map(drug => drug.drug_name_column);
+                    const existingNames = existingData.map(drug => drug.product_name_column);
                     const newRows = [];
 
                     for (let i = 0; i < numRowsToAdd; i++) {
                         const newDrugName = generateUniqueName(existingNames);
                         existingNames.push(newDrugName);
-                        newRows.push({ drug_name_column: newDrugName, drug_supplier_column: '', drug_image_url_column: '' });
+                        newRows.push({ product_name_column: newDrugName, product_supplier_column: '', product_image_url_column: '' });
                     }
 
                     // Insert new rows into the Supabase database
                     const { data, error } = await supabaseClient
-                        .from('drug_table')
+                        .from('pharmology_product_table')
                         .insert(newRows)
                         .select();
 
@@ -398,7 +398,7 @@
 
                     // Delete selected rows from the Supabase database
                     const { error } = await supabaseClient
-                        .from('drug_table')
+                        .from('pharmology_product_table')
                         .delete()
                         .in('id', idsToDelete);
 
@@ -454,9 +454,9 @@
                             if (drugName || drugSupplier || drugImage) {
                                 // Prepare new row object with trimmed values
                                 newRows.push({
-                                    drug_name_column: drugName ? drugName.trim() : '',
-                                    drug_supplier_column: drugSupplier ? drugSupplier.trim() : '',
-                                    drug_image_url_column: drugImage ? drugImage.trim() : ''
+                                    product_name_column: drugName ? drugName.trim() : '',
+                                    product_supplier_column: drugSupplier ? drugSupplier.trim() : '',
+                                    product_image_url_column: drugImage ? drugImage.trim() : ''
                                 });
                             } else {
                                 console.warn('Skipping row due to all columns being empty:', row);
@@ -465,7 +465,7 @@
 
                         // Insert new rows into the Supabase database
                         const { data, error } = await supabaseClient
-                            .from('drug_table')
+                            .from('pharmology_product_table')
                             .insert(newRows)
                             .select();
 

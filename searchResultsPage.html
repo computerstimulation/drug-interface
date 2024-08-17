@@ -58,17 +58,51 @@
         }
 
         .searchResultsPageSearchDiv {
-            width: 50%;
-            display: flex;
+            display: grid;
+            grid-template-rows: auto auto;
+            position: relative;
+            border-radius: 24px 24px 24px 24px;
+        }
+
+        .searchResultsPageSearchDiv:hover,
+        .searchResultsPageSearchDiv:hover .searchResultsPageAutocompleteDivClass {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
         }
 
         .searchResultsPageSearchInput {
             width: 500px;
-            min-height: 60%;
             appearance: none;
             border: none;
-            border-radius: 40px 0 0 40px;
+            border-radius: 24px 0 0 24px;
             padding: 10px 10px 10px 32.5px;
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+
+        .searchResultsPageSearchInput:focus {
+            outline: none;
+        }
+
+        .searchResultsPageSearchInput:focus {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+        }
+
+        .searchResultsPageAutocompletingClass .searchResultsPageSearchInput {
+            border-radius: 24px 0px 0px 0px;
+        }
+
+        .searchResultsPageAutocompletingClass .searchResultsPageAutocompleteDivClass {
+            height: 300px;
+            width: 100%;
+            background-color: white;
+            border-radius: 0 0 24px 24px;
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            position: absolute;
+            box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
         }
 
         .searchResultsPageSearchButton {
@@ -79,6 +113,14 @@
             padding: 10px 50px;
             position: relative;
             z-index: 0;
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+
+        .searchResultsPageAutocompletingClass .searchResultsPageSearchButton {
+            border-radius: 0 24px 0 0;
         }
 
         .searchResultsPageSearchButton img {
@@ -317,6 +359,7 @@
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
                     placeholder="Rechercher Medicament">
+                <div class="searchResultsPageAutocompleteDivClass"></div>
                 <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
                         src="/images/search.png"></button>
             </div>
@@ -652,7 +695,7 @@
 
         let searchQuery;
         //perform a new search on window load
-        window.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('DOMContentLoaded', async function () {
 
             //get the search query from the URL on page load
             searchQuery = new URLSearchParams(window.location.search).get('query');
@@ -662,6 +705,24 @@
             document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
 
             searchProducts();
+
+            //get all product names from supabase
+            //see if any product names include the search query input value and see if any start
+            //with these values but first we have to get the supabase product names
+            const { data: pharmology_product_table, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select('product_name_column');
+
+            //what to do with the data? what to do with the product names? add them to an array?
+            //remove the product_name_column from the data?
+            console.log(pharmology_product_table);
+
+            allProductNames = pharmology_product_table.map((product) => product.product_name_column);
+            console.log(`all product names: ${allProductNames}`);
+
+            //remove duplicated from allProductNames
+            allProductNames = Array.from(new Set(allProductNames));
+            console.log(`all product names without duplicates: ${allProductNames}`);
         });
 
         //on user search take search query
@@ -920,6 +981,83 @@
                 }
             };
         });
+
+        //let searchResultsPageAutocompleteSuggestionsArray
+        let searchResultsPageAutocompleteSuggestionsArray = [];
+
+        //add searchResultsPageAutocompletingClass on
+        //add document event listener on input
+        document.addEventListener('input', function (event) {
+
+            //if the input was on the search bar input
+            if (event.target.id === 'searchResultsPageSearchInputId') {
+
+                //if the search query is not empty
+                if (document.getElementById('searchResultsPageSearchInputId').value.length > 0) {
+
+                    console.log(`search query: ${searchQuery}`);
+
+                    //check if the search query
+                    //check if the product names include the search query and if they STARTwithmethod the search query
+                    //if they do then add them to the autocomplete suggestions array
+                    //autocomplete suggestions = products names that include the search query and start
+                    //with it
+                    searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
+                    console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
+                }
+
+                //if the search query is empty
+                if (document.getElementById('searchResultsPageSearchInputId').value === '') {
+
+                    //clear the searchResultsPageAutocompleteSuggestionsArray
+                    searchResultsPageAutocompleteSuggestionsArray = [];
+                };
+
+                //if the autocomplete suggestions are not empty
+                if (searchResultsPageAutocompleteSuggestionsArray.length > 0) {
+
+                    //if the focus is on the search bar input
+                    if (document.activeElement === document.getElementById('searchResultsPageSearchInputId')) {
+
+                        //add the .searchResultsPageAutocompletingClass to the document
+                        document.documentElement.classList.add('searchResultsPageAutocompletingClass');
+                    }
+                }
+
+                //if the autocomplete suggestions are empty
+                if (searchResultsPageAutocompleteSuggestionsArray.length === 0) {
+
+                    //remove the searchResultsPageAutocompletingClass from the document
+                    document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+                };
+            };
+        });
+
+        //listen for focus out events
+        document.addEventListener('focusout', function (event) {
+
+            //if the focus has left the search bar input
+            if (document.activeElement !== document.getElementById('searchResultsPageSearchInputId')) {
+
+                //remove the searchResultsPageAutocompletingClass from the document
+                document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+            }
+        })
+
+        //listen for focus in events
+        document.addEventListener('focusin', function (event) {
+
+            //if the focus is on the search bar input
+            if (document.activeElement === document.getElementById('searchResultsPageSearchInputId')) {
+
+                //if the autocomplete suggestions are not empty
+                if (searchResultsPageAutocompleteSuggestionsArray.length > 0) {
+
+                    //add the .searchResultsPageAutocompletingClass to the document
+                    document.documentElement.classList.add('searchResultsPageAutocompletingClass');
+                }
+            }
+        })
     </script>
 </body>
 

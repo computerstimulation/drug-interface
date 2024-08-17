@@ -316,9 +316,7 @@
             </button>
             <div class="searchResultsPageSearchDiv">
                 <input type="search" class="searchResultsPageSearchInput" id="searchResultsPageSearchInputId"
-                    placeholder="Rechercher Medicament" list="searchResultsPageSearchResultsDatalistId">
-                    <datalist id="searchResultsPageSearchResultsDatalistId">
-                    </datalist>
+                    placeholder="Rechercher Medicament">
                 <button id="searchResultsPageSearchButtonId" class="searchResultsPageSearchButton"><img
                         src="/images/search.png"></button>
             </div>
@@ -921,17 +919,6 @@
                     console.log(`filtered search`);
                 }
             };
-        });
-        
-        //on page load get all product names from supabase and add them to the search results datalist
-        window.addEventListener('DOMContentLoaded', async function () {
-            const { data, error } = await supabaseClient
-                .from('pharmology_product_table')
-                .select('product_name_column');
-
-            data.forEach((product) => {
-                document.getElementById('searchResultsPageSearchResultsDatalistId').insertAdjacentHTML('beforeend', `<option value="${product.product_name_column}">`);
-            });
         });
     </script>
 </body>

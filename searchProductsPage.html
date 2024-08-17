@@ -40,6 +40,10 @@
             height: auto;
         }
 
+        .searchProductsPageSearchDivClass {
+            border: 0px solid black;
+        }
+
         .searchProductsPageSearchInput {
             font-size: 1rem;
             display: block;
@@ -49,7 +53,24 @@
             width: 80%;
             margin: 0 auto;
             text-align: center;
-            margin-bottom: 4%;
+        }
+
+        #searchProductsPageSearchAutocompleteDivId {
+            display: none;
+            width: 80%;
+            height: 200px;
+            background-color: white;
+            margin: 0 auto;
+        }
+
+        .searching #searchProductsPageSearchAutocompleteDivId {
+            display: block;
+            overflow-y: scroll;
+        }
+
+        .autocompleteItemDivClass {
+            padding: 10px;
+            cursor: pointer;
         }
 
         .searchProductsPageRechercheButton {
@@ -62,6 +83,7 @@
             padding: 15px;
             border-radius: 5px;
             color: black;
+            margin-top: 4%;
         }
     </style>
 </head>
@@ -70,9 +92,11 @@
     <div class="searchProductsPageLogoDiv">
         <img src="/images/Pharmology 2.svg">
     </div>
-    <input type="search" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
-        class="searchProductsPageSearchInput" list="searchProductsPageSearchDatalistId">
-    <datalist id="searchProductsPageSearchDatalistId"></datalist>
+    <div class="searchProductsPageSearchDivClass">
+        <input type="search" id="searchProductsPageSearchInputId" autofocus placeholder="Recherche Medicament"
+            class="searchProductsPageSearchInput">
+        <div id="searchProductsPageSearchAutocompleteDivId"></div>
+    </div>
     <button id="searchProductsPageSearchButtonId" class="searchProductsPageRechercheButton">Recherche</button>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -81,28 +105,202 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        //let searchQuery
+        let searchQuery;
+
         // Event listener for the Enter key press
         document.getElementById('searchProductsPageSearchInputId').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
-                let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+                searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
                 window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
             }
         });
 
+        //event listener for the search button click
         document.getElementById('searchProductsPageSearchButtonId').addEventListener('click', function () {
-            let searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+            searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
             window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
         });
 
-        //on page load get all product names from supabase and add them to the search results datalist
-        window.addEventListener('DOMContentLoaded', async function () {
-            const { data, error } = await supabaseClient
-                .from('pharmology_product_table')
-                .select('product_name_column');
+        //add input event listener to document
+        document.addEventListener('input', function (event) {
 
-            data.forEach((product) => {
-                document.getElementById('searchProductsPageSearchDatalistId').insertAdjacentHTML('beforeend', `<option value="${product.product_name_column}">`);
-            });
+            //if the event target is the search input
+            if (event.target.id === 'searchProductsPageSearchInputId') {
+
+                //check if the searchProductsPageSearchInputId value is not empty
+                if (document.getElementById('searchProductsPageSearchInputId').value !== '') {
+
+                    //the autocomplete div should now be show
+                    //add .searching class to the document
+                    document.documentElement.classList.add('searching');
+
+                    searchQuery = document.getElementById('searchProductsPageSearchInputId').value;
+
+                    let autocompleteSuggestions = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery));
+                    console.log(autocompleteSuggestions);
+
+                    document.getElementById('searchProductsPageSearchAutocompleteDivId').innerHTML = '';
+
+                    autocompleteSuggestions.forEach((item) => {
+                        document.getElementById('searchProductsPageSearchAutocompleteDivId').insertAdjacentHTML('beforeend', `
+                            <div class="autocompleteItemDivClass" tabindex="0">${item}</div>
+                        `);
+                    });
+                };
+
+                //if the searchProductsPageSearchInputId value is empty
+                if (document.getElementById('searchProductsPageSearchInputId').value === '') {
+
+                    //remove the .searching class from the document
+                    document.documentElement.classList.remove('searching');
+                }
+            };
+        });
+
+        //let allProductNames
+        let allProductNames = [];
+
+        //on page load bring all product names from supabase
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            //get all product names
+            let { data, error } = await supabaseClient
+                .from('pharmology_product_table')
+                .select('product_name_column')
+
+            console.log(data);
+
+            //use the map() method to adjust the allProductNames array by removing the keys and leaving
+            //only the values
+            //i don't know how item.product_name_column is a function
+            allProductNames = data.map(item => item.product_name_column);
+            console.log(allProductNames);
+
+            //remove the duplicates in the allProductNames array
+            allProductNames = [...new Set(allProductNames)];
+            console.log(allProductNames);
+        });
+
+        //add click event listener to the document
+        document.addEventListener('click', function (event) {
+
+            //if the event target is a search suggestion
+            if (event.target.className === 'autocompleteItemDivClass') {
+
+                searchQuery = event.target.textContent;
+                window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+            };
+        });
+
+        //add enter key press event listener to the document
+        document.addEventListener('keydown', function (event) {
+
+            //if the event key pressed is the enter key
+            if (event.key === 'Enter') {
+
+                //if the event.target is an autocomplete suggestion
+                if (event.target.className === 'autocompleteItemDivClass') {
+
+                    searchQuery = event.target.textContent;
+                    window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
+                };
+            };
+
+            //if the event key pressed is the down arrow key
+            if (event.key === 'ArrowDown') {
+
+                //if the event.target is the search input
+                if (event.target.id === 'searchProductsPageSearchInputId') {
+
+                    //if the autocomplete div is not empty
+                    if (document.getElementById('searchProductsPageSearchAutocompleteDivId').innerHTML !== '') {
+
+                        //then focus on the first autocomplete suggestion
+                        document.querySelector('.autocompleteItemDivClass').focus();
+                    };
+                };
+
+                //if the event.target is an autocomplete suggestion
+                if (event.target.className === 'autocompleteItemDivClass') {
+
+                    //if the event.target is not the last child of 
+                    //searchProductsPageSearchAutocompleteDivId
+                    if (event.target !== document.getElementById('searchProductsPageSearchAutocompleteDivId').lastElementChild) {
+
+                        //move to the next sibling element focus on the next sibling element
+                        event.target.nextElementSibling.focus();
+                    };
+
+                    //if the event.target is the last child of searchProductsPageSearchAutocompleteDivId
+                    if (event.target === document.getElementById('searchProductsPageSearchAutocompleteDivId').lastElementChild) {
+
+                        //stop cursor from starting after the text in the search input
+                        event.preventDefault();
+
+                        //focus on the search input
+                        document.getElementById('searchProductsPageSearchInputId').focus();
+
+                        //move the cursor to the end of the text in the search input
+                        document.getElementById('searchProductsPageSearchInputId').setSelectionRange(document.getElementById('searchProductsPageSearchInputId').value.length, document.getElementById('searchProductsPageSearchInputId').value.length);
+                    };
+                };
+            };
+
+            //if the event key pressed is the up arrow key
+            if (event.key === 'ArrowUp') {
+
+                //if the event.target is an autocomplete suggestion
+                if (event.target.className === 'autocompleteItemDivClass') {
+
+                    //if the event.target is not the first child of
+                    //searchProductsPageSearchAutocompleteDivId
+                    if (event.target !== document.getElementById('searchProductsPageSearchAutocompleteDivId').firstElementChild) {
+
+                        //move to the previous sibling element focus on it
+                        event.target.previousElementSibling.focus();
+                    };
+
+                    //if the event.target is the first child of searchProductsPageSearchAutocompleteDivId
+                    if (event.target === document.getElementById('searchProductsPageSearchAutocompleteDivId').firstElementChild) {
+
+                        //stop cursor from starting before the text in the search input
+                        event.preventDefault();
+
+                        //focus on the search input
+                        document.getElementById('searchProductsPageSearchInputId').focus();
+
+                        //move the cursor to the end of the text in the search input
+                        document.getElementById('searchProductsPageSearchInputId').setSelectionRange(document.getElementById('searchProductsPageSearchInputId').value.length, document.getElementById('searchProductsPageSearchInputId').value.length);
+                    };
+                };
+
+                //if the event.target is the search input
+                if (event.target.id === 'searchProductsPageSearchInputId') {
+
+                    //if there are autocomplete suggestions
+                    if (document.getElementsByClassName('autocompleteItemDivClass').length > 0) {
+
+                        //focus on the last autocomplete suggestion
+                        document.getElementById('searchProductsPageSearchAutocompleteDivId').lastElementChild.focus();
+                    };
+                }
+            };
+
+            //if the event key pressed is the space bar
+            if (event.key === ' ') {
+
+                //if the event.target is an autocomplete suggestion
+                if (event.target.className === 'autocompleteItemDivClass') {
+
+                    //get the text content of the autocomplete suggestion and assign it to the
+                    //search input
+                    document.getElementById('searchProductsPageSearchInputId').value = event.target.textContent;
+
+                    //return the focus to the search bar input
+                    document.getElementById('searchProductsPageSearchInputId').focus();
+                };
+            };
         });
     </script>
 </body>

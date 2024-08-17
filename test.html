@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Autocomplete</title>
+    <style>
+        .autocomplete-container {
+            position: relative;
+            display: inline-block;
+        }
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .autocomplete-item:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="autocomplete-container">
+        <input id="autocomplete-input" type="text" placeholder="Start typing...">
+        <div id="autocomplete-items" class="autocomplete-items"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('autocomplete-input');
+    const itemsContainer = document.getElementById('autocomplete-items');
+
+    const data = [
+    "Apple", "Apricot", "Avocado", "Banana", "Blackberry", "Blueberry", "Boysenberry",
+    "Cantaloupe", "Cherry", "Coconut", "Cranberry", "Date", "Dragonfruit", "Durian",
+    "Fig", "Grape", "Grapefruit", "Guava", "Honeydew", "Kiwi", "Kumquat", "Lemon",
+    "Lime", "Lychee", "Mango", "Mulberry", "Nectarine", "Orange", "Papaya", "Peach",
+    "Pear", "Persimmon", "Pineapple", "Plum", "Pomegranate", "Raspberry", "Strawberry",
+    "Tangerine", "Watermelon", "Jackfruit", "Longan", "Passionfruit", "Starfruit",
+    "Gooseberry", "Date Plum", "Elderberry", "Fig", "Clementine", "Kiwifruit",
+    "Sapote", "Cherimoya", "Mangosteen", "Jujube", "Salak", "Langsat", "Rhubarb",
+    "Quince", "Soursop", "Dewberry", "Satsuma", "Blackcurrant", "Redcurrant",
+    "Whitecurrant", "Huckleberry", "Cloudberry", "Salmonberry", "Cranberry", "Medlar"
+];
+
+    input.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        itemsContainer.innerHTML = '';
+
+        if (!query) {
+            return;
+        }
+
+        const filteredData = data.filter(item => item.toLowerCase().includes(query));
+
+        filteredData.forEach(item => {
+            const div = document.createElement('div');
+            div.classList.add('autocomplete-item');
+            div.textContent = item;
+            div.addEventListener('click', function() {
+                input.value = item;
+                itemsContainer.innerHTML = '';
+            });
+            itemsContainer.appendChild(div);
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !itemsContainer.contains(e.target)) {
+            itemsContainer.innerHTML = '';
+        }
+    });
+});
+
+    </script>
+</body>
+</html>

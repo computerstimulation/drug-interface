@@ -93,8 +93,12 @@
             border-radius: 24px 0px 0px 0px;
         }
 
+        .searchResultsPageAutocompleteDivClass {
+            display: none;
+        }
+
         .searchResultsPageAutocompletingClass .searchResultsPageAutocompleteDivClass {
-            height: 300px;
+            display: block;
             width: 100%;
             background-color: white;
             border-radius: 0 0 24px 24px;
@@ -103,6 +107,12 @@
             grid-row-start: 2;
             position: absolute;
             box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+        }
+
+        .searchResultsPageAutocompleteSuggestionDivClass {
+            padding: 10px;
+            border-bottom: 0px solid black;
+            cursor: pointer;
         }
 
         .searchResultsPageSearchButton {
@@ -731,6 +741,8 @@
             if (searchQuery) {
                 searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
                 console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
+
+                fillAutocompleteDiv();
             };
         });
 
@@ -1013,6 +1025,8 @@
                     //with it
                     searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
                     console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
+
+                    fillAutocompleteDiv();
                 }
 
                 //if the search query is empty
@@ -1045,11 +1059,26 @@
         //listen for focus out events
         document.addEventListener('focusout', function (event) {
 
+            console.log(event);
+            console.log(document.activeElement);
+
             //if the focus has left the search bar input
             if (document.activeElement !== document.getElementById('searchResultsPageSearchInputId')) {
 
-                //remove the searchResultsPageAutocompletingClass from the document
-                document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+                //if the user has clicked on of the autocomplete suggestions
+                //meaning if the user has focused 
+                //if active element is autocomplete suggestion
+                //check last mouse down event target class name since mousedown triggers before focusout
+                if (lastMouseDownEventTargetClassName === 'searchResultsPageAutocompleteSuggestionDivClass') {
+
+                    return;
+
+                } else if (lastMouseDownEventTargetClassName !== 'searchResultsPageAutocompleteSuggestionDivClass') {
+
+                    //remove the searchResultsPageAutocompletingClass from the document
+                    document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+
+                }
             }
         })
 
@@ -1068,6 +1097,52 @@
                     document.documentElement.classList.add('searchResultsPageAutocompletingClass');
                 }
             }
+        })
+
+        //display the autocomplete suggestions
+        function fillAutocompleteDiv() {
+            document.querySelector('.searchResultsPageAutocompleteDivClass').innerHTML = ``;
+
+            searchResultsPageAutocompleteSuggestionsArray.forEach((suggestion) => {
+                document.querySelector('.searchResultsPageAutocompleteDivClass').insertAdjacentHTML('beforeend', `<div class="searchResultsPageAutocompleteSuggestionDivClass">${suggestion}</div>`)
+            });
+        };
+
+        //listen for click event on document
+        document.addEventListener('click', function (event) {
+
+            console.log(event);
+
+            //if event target is autocomplete suggestion
+            if (event.target.className === 'searchResultsPageAutocompleteSuggestionDivClass') {
+
+                searchQuery = event.target.textContent;
+                console.log(`search query: ${searchQuery}`);
+
+                //display the new search query in the search bar
+                document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
+
+                //add the search query to the url manually
+                let url = new URL(window.location);
+                url.searchParams.set('query', searchQuery);
+                history.pushState({}, '', url);
+
+                //remove the searchResultsPageAutocompletingClass from the document
+                document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+
+                //search
+                searchProducts();
+            }
+        })
+
+        let lastMouseDownEventTargetClassNameClassName;
+
+        //mousedown event listener on document
+        document.addEventListener('mousedown', function (event) {
+
+            //store last mousedown event target
+            lastMouseDownEventTargetClassName = event.target.className;
+            console.log(`lastMouseDownEventTargetClassName: ${lastMouseDownEventTargetClassName}`);
         })
     </script>
 </body>

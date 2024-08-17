@@ -723,6 +723,11 @@
             //remove duplicated from allProductNames
             allProductNames = Array.from(new Set(allProductNames));
             console.log(`all product names without duplicates: ${allProductNames}`);
+
+            //fill the autocomplete suggestions array based on the initial search query so we don't
+            //have to wait for user to input letters to fill the array for the first time
+            searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
+            console.log(`searchResultsPageAutocompleteSuggestionsArray: ${searchResultsPageAutocompleteSuggestionsArray}`);
         });
 
         //on user search take search query
@@ -1049,6 +1054,8 @@
 
             //if the focus is on the search bar input
             if (document.activeElement === document.getElementById('searchResultsPageSearchInputId')) {
+
+                console.log(`autocomplete suggestions: ${searchResultsPageAutocompleteSuggestionsArray}`);
 
                 //if the autocomplete suggestions are not empty
                 if (searchResultsPageAutocompleteSuggestionsArray.length > 0) {

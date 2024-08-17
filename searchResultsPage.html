@@ -781,14 +781,19 @@
             window.location.href = '/cartPage.html';
         });
 
+        //create a supplier filters checkbox states object
+        supplierFiltersCheckedStatesObject = {};
+
         //listen to input on supplier filter search bar
         document.getElementById('searchResultsPageSupplierFilterSearchInputId').addEventListener('input', (event) => {
+
+            //get the value of the search query
             filterSearchQuery = document.getElementById('searchResultsPageSupplierFilterSearchInputId').value;
             console.log(filterSearchQuery);
 
             //see all the available suppliers
-            console.log(searchQuerySuppliers);
-            console.log(filteredSuppliers);
+            console.log(`searchQuerySuppliers: ${searchQuerySuppliers}`);
+            console.log(`filteredSuppliers: ${filteredSuppliers}`);
 
             //if there are no characters in the supplier search bar then list all search query suppliers
             //first clear the supplier filters then relist the suppliers
@@ -798,13 +803,23 @@
                 document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML = '';
 
                 //relist the search query suppliers
+                //use the supplier filters checked states object to check the checkboxes
                 searchQuerySuppliers.forEach((supplier) => {
-                    document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
+                    document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input ${supplierFiltersCheckedStatesObject[`searchResultsPage${supplier}FilterInput`] ? 'checked' : ''} class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
                 });
             }
 
+            //log all supplier search results which include the search query in lower case
             let supplierSearchResults = searchQuerySuppliers.filter(element => element.toLowerCase().includes(filterSearchQuery.toLowerCase()));
             console.log(`supplier search results ${supplierSearchResults}`);
+
+            //display the supplier filter search results
+            document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML = '';
+
+            //display the supplier filter search results
+            supplierSearchResults.forEach((supplier) => {
+                document.getElementById('searchResultsPageSuppliersFilterDiv').innerHTML += `<div class="searchResultsPageSupplierFiltersInnerDivClass"><label for="searchResultsPage${supplier}FilterInput"><input ${supplierFiltersCheckedStatesObject[`searchResultsPage${supplier}FilterInput`] ? 'checked' : ''} class="searchResultsPageSupplierFilterInputClass" id="searchResultsPage${supplier}FilterInput" type="checkbox" value="${supplier}"><img class="searchResultsPageFilterCheckboxImgClass" src="/svg/checkmark.svg">${supplier}</div>`;
+            });
         });
 
         //add an event listener to the HTML root element and listen for checkbox change events
@@ -812,6 +827,15 @@
         document.addEventListener('change', (event) => {
             if (event.target.className === 'searchResultsPageSupplierFilterInputClass') {
                 console.log(`click target ${event.target.value}`);
+
+                //get the id of the clicked target
+                console.log(`click target id ${event.target.id}`);
+                console.log(`event.target.checked ${event.target.checked}`);
+                //event.target.id
+
+                supplierFiltersCheckedStatesObject[event.target.id] = event.target.checked;
+                console.log(supplierFiltersCheckedStatesObject);
+
 
                 //what is the checkbox? every search resultspagesupplierfilterinput class
                 //we need to get the closest ancestor with an id? because not every checkbox has an

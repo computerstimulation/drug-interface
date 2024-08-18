@@ -563,6 +563,9 @@
         //search products function (new search)
         async function searchProducts() {
 
+            //blur move the focus away from the search bar input
+            document.getElementById('searchResultsPageSearchInputId').blur();
+
             //on new search clear supplier filter checkbox states object
             supplierFiltersCheckedStatesObject = {};
 

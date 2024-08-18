@@ -83,9 +83,6 @@
 
         .searchResultsPageSearchInput:focus {
             outline: none;
-        }
-
-        .searchResultsPageSearchInput:focus {
             box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
         }
 
@@ -1096,17 +1093,22 @@
                     //remove the searchResultsPageAutocompletingClass from the document
                     document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
 
-                    //let the search query = search bar input value
-                    searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+                    //only update the search query and re fill the autocomplete div if there was a highlighted
+                    //autocomplete suggestion
+                    if (document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass')) {
 
-                    //fill the autocomplete suggestions? how does filling this array again solve anything? does it
-                    //automatically update the autocomplete suggestions div ui? let's try it
-                    //no we have to first update the searchResultsPageAutocompleteSuggestionsArray before filling
-                    //the autocomplete div
-                    searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
-                    
-                    //then fill the autocomplete div
-                    fillAutocompleteDiv();
+                        //let the search query = search bar input value
+                        searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+
+                        //fill the autocomplete suggestions? how does filling this array again solve anything? does it
+                        //automatically update the autocomplete suggestions div ui? let's try it
+                        //no we have to first update the searchResultsPageAutocompleteSuggestionsArray before filling
+                        //the autocomplete div
+                        searchResultsPageAutocompleteSuggestionsArray = allProductNames.filter(item => item.toLowerCase().startsWith(searchQuery.toLowerCase()));
+
+                        //then fill the autocomplete div
+                        fillAutocompleteDiv();
+                    }
                 }
             }
         })

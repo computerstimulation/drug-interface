@@ -579,12 +579,12 @@
             filteredSuppliers = [];
 
             //define search query
-            const { data, error } = await supabaseClient
+            /*const { data, error } = await supabaseClient
                 .from('pharmology_product_table')
                 .select()
                 .ilike('product_name_column', `%${searchQuery}%`)
 
-            console.log(`regular search data: ${data}`);
+            console.log(`regular search data: ${JSON.stringify(data, null, 2)}`);*/
 
             //add the fuzzy search results to the original search
             //first search
@@ -597,10 +597,13 @@
                 });
 
             //log fuzzy search data
-            console.log(`fuzzy search data: ${fuzzySearchData}`);
+            console.log(`fuzzy search data: ${JSON.stringify(fuzzySearchData, null, 2)}`);
 
             //then merge the arrays
-            regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+            //regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+
+            //try only the fuzzy search data
+            regularPlusFuzzySearchResults = fuzzySearchData
             console.log(`merged search data: ${regularPlusFuzzySearchResults}`);
 
             //then remove the duplicates
@@ -634,10 +637,10 @@
         async function filteredSearch() {
 
             //define search query
-            const { data, error } = await supabaseClient
+            /*const { data, error } = await supabaseClient
                 .from('pharmology_product_table')
                 .select()
-                .ilike('product_name_column', `%${searchQuery}%`)
+                .ilike('product_name_column', `%${searchQuery}%`)*/
 
             //add the fuzzy search results
             const { data: fuzzySearchData, error: fuzzySearchError } = await supabaseClient
@@ -649,7 +652,10 @@
                 });
 
             //merge the datasets (search results)
-            regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+            //regularPlusFuzzySearchResults = data.concat(fuzzySearchData);
+
+            //try only the fuzzy search data
+            regularPlusFuzzySearchResults = fuzzySearchData;
 
             //remove dupes
             regularPlusFuzzySearchResults = Array.from(

@@ -119,6 +119,10 @@
             background-color: #f1f1f1;
         }
 
+        .searchResultsPageHighlightedAutocompleteDivClass {
+            background-color: #f1f1f1;
+        }
+
         .searchResultsPageAutocompleteSuggestionDivClass:last-of-type {
             border-radius: 0 0 24px 24px;
         }
@@ -766,6 +770,9 @@
         document.getElementById('searchResultsPageSearchInputId').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
 
+                //let the search bar input value be the search query
+                searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+
                 //update url
                 let url = new URL(window.location);
                 url.searchParams.set('query', searchQuery);
@@ -1157,7 +1164,135 @@
             //store last mousedown event target
             lastMouseDownEventTargetClassName = event.target.className;
             console.log(`lastMouseDownEventTargetClassName: ${lastMouseDownEventTargetClassName}`);
-        })
+        });
+
+        //listen for key down event on document
+        document.addEventListener('keydown', function (event) {
+
+            //if the event target is the search bar input
+            //the focus shall remain on the search bar input since in this version of the autocomplete
+            //suggestion functionality we will not be moving focus away from the search bar input
+            if (event.target.id === 'searchResultsPageSearchInputId') {
+
+                //if arrow down is pressed
+                if (event.key === 'ArrowDown') {
+
+                    //if the autocomplete suggestions are not empty
+                    if (searchResultsPageAutocompleteSuggestionsArray.length > 0) {
+
+                        //if there is a highlighted autocomplete suggestion
+                        if (document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass')) {
+
+                            //if the highlighted autocomplete suggestion does not have a next sibling
+                            if (!document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').nextElementSibling) {
+
+                                console.log(`no next sibling`);
+
+                                //remove searchResultsPageHighlightedAutocompleteDivClass
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').classList.remove('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //set the search bar input value to the searchQuery
+                                document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
+                            }
+
+                            //if the highlighted autocomplete suggestion has a next sibling
+                            else if (document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').nextElementSibling) {
+
+                                console.log(`next sibling`);
+
+                                //add searchResultsPageHighlightedAutocompleteDivClass to the next sibling
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').nextElementSibling.classList.add('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //remove the searchResultsPageHighlightedAutocompleteDivClass from the current
+                                //highlighted autocomplete suggestion
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').classList.remove('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //add that highlighted suggestion to the search bar input value
+                                document.getElementById('searchResultsPageSearchInputId').value = document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').textContent;
+                            }
+                        }
+
+                        //if there is no highlighted autocomplete suggestion
+                        else if (!document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass')) {
+
+                            //add a searchResultsPageHighlightedAutocompleteDivClass to the first
+                            //auto complete suggestion
+                            document.querySelector('.searchResultsPageAutocompleteSuggestionDivClass').classList.add('searchResultsPageHighlightedAutocompleteDivClass');
+
+                            //add that highlighted suggestion to the search bar input value
+                            document.getElementById('searchResultsPageSearchInputId').value = document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').textContent;
+                        }
+                    }
+                }
+
+                if (event.key === 'ArrowUp') {
+
+                    //prevent default behavior? i want the cursor not to move to the beginning
+                    //of the text on arrow up key down
+                    //yeah it did work :)
+                    event.preventDefault();
+
+                    //if there are any autocomplete suggestions
+                    if (searchResultsPageAutocompleteSuggestionsArray.length > 0) {
+
+                        //if there are no highlighted autocomplete suggestions
+                        if (!document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass')) {
+
+                            console.log(`no highlighted autocomplete suggestion`);
+
+                            //highlight the last searchResultsPageAutocompleteSuggestionDivClass
+                            document.querySelector('.searchResultsPageAutocompleteSuggestionDivClass:last-child').classList.add('searchResultsPageHighlightedAutocompleteDivClass');
+
+                            //add the value of the highlighted autcomplete suggestion to the search bar input
+                            document.getElementById('searchResultsPageSearchInputId').value = document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').textContent;
+                        }
+
+                        //if there is a highlighted autocomplete suggestion
+                        else if (document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass')) {
+
+                            console.log(`highlighted autocomplete suggestion`);
+
+                            //if the highlighted autocomplete suggestion has a previous sibling
+                            if (document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').previousElementSibling) {
+
+                                console.log(`has previous sibling`);
+
+                                //add the searchResultsPageHighlightedAutocompleteDivClass to the 
+                                //previous sibling
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').previousElementSibling.classList.add('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //remove the searchResultsPageHighlightedAutocompleteDivClass from the
+                                // second highlighted autocomplete suggestion now that there is a
+                                //second
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').nextElementSibling.classList.remove('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //add the value of the highlighted autcomplete suggestion to the search bar input
+                                document.getElementById('searchResultsPageSearchInputId').value = document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').textContent;
+                            }
+
+                            //if the highlighted autocomplete suggestion does not have a previous sibling
+                            //only run this if the previous if function is false
+                            //that's why we have an else if
+                            else if (!document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').previousElementSibling) {
+
+                                //remove the searchResultsPageHighlightedAutocompleteDivClass from the
+                                //first highlighted autocomplete suggestion
+                                document.querySelector('.searchResultsPageHighlightedAutocompleteDivClass').classList.remove('searchResultsPageHighlightedAutocompleteDivClass');
+
+                                //set the search bar input value to the search query
+                                document.getElementById('searchResultsPageSearchInputId').value = searchQuery;
+                            }
+                        }
+                    }
+                }
+
+                //if the enter key is pressed
+                if (event.key === 'Enter') {
+
+
+                }
+            }
+        });
     </script>
 </body>
 

@@ -767,11 +767,14 @@
         })
 
         // Event listener for the Enter key press on the search bar input
-        document.getElementById('searchResultsPageSearchInputId').addEventListener('keypress', function (event) {
+        /*document.getElementById('searchResultsPageSearchInputId').addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
 
                 //let the search bar input value be the search query
                 searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
+
+                //remove the autocompleting div class from the document
+
 
                 //update url
                 let url = new URL(window.location);
@@ -781,7 +784,7 @@
                 //perform a new search
                 searchProducts();
             }
-        });
+        });*/
 
         document.getElementById('searchResultsPageSearchButtonId').addEventListener('click', function () {
 
@@ -1289,7 +1292,19 @@
                 //if the enter key is pressed
                 if (event.key === 'Enter') {
 
+                    //let the search bar input value be the search query
+                    searchQuery = document.getElementById('searchResultsPageSearchInputId').value;
 
+                    //remove the autocompleting div class from the document
+                    document.documentElement.classList.remove('searchResultsPageAutocompletingClass');
+
+                    //update url
+                    let url = new URL(window.location);
+                    url.searchParams.set('query', searchQuery);
+                    history.pushState({}, '', url);
+
+                    //perform a new search
+                    searchProducts();
                 }
             }
         });

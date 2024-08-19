@@ -129,11 +129,6 @@
             <div class="thankYouPageOrderAddressDivClass">
                 <img src="/svg/location.svg">
                 <span class="thankYouPageAddressTitleSpanClass">Adresse de livraison :</span>
-                <span>Aymen Test</span>
-                <span>Pharmacie de Nuit</span>
-                <span>En face de Carrefour</span>
-                <span>Tataouine du Sud</span>
-                <span>Tataouine</span>
             </div>
             <div class="thankYouPageOrderTotalDivClass">
                 <span class="thankYouPageTotalSpanClass">Total TTC</span>
@@ -148,9 +143,14 @@
         © 2024 - MyPharmology™
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
         //listen to click on document
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
 
             //if event target is the return button
             if (event.target.className === 'thankYouPageReturnButtonClass') {
@@ -158,6 +158,24 @@
                 //redirect to the initial search page
                 window.location.href = 'searchProductsPage.html';
             }
+        });
+
+        //get the address information of the user from supabase on dom content loaded
+        document.addEventListener('DOMContentLoaded', async function () {
+
+            let { data: user_address_table, error } = await supabaseClient
+                .from('user_address_table')
+                .select('*')
+
+            //add address details in spans after thankYouPageAddressTitleSpanClass
+            document.querySelector('.thankYouPageAddressTitleSpanClass').insertAdjacentHTML('afterend', `
+                <span>${user_address_table[0].user_address_person_name_column}</span>
+                <span>${user_address_table[0].user_address_business_name_column}</span>
+                <span>${user_address_table[0].user_address_description_column}</span>
+                <span>${user_address_table[0].user_address_city_column}</span>
+                <span>${user_address_table[0].user_address_governorate_column}</span>
+                `
+            )
         });
     </script>
 </body>

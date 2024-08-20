@@ -1,5 +1,7 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
+console.log('Resend API Key:', RESEND_API_KEY);
+
 const handler = async (_request: Request): Promise<Response> => {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

@@ -641,6 +641,35 @@
             let searchQuery = document.getElementById('searchResultsPageSearchButtonId').value;
             window.location.href = `searchResultsPage.html?query=${encodeURIComponent(searchQuery)}`;
         });
+
+        //on confirmer press get user id from local storage and insert it along with
+        //cart items in 
+        async function insertOrderDetails() {
+            const { data: { user } } = await supabaseClient.auth.getUser()
+            console.log(user.id);
+
+            getLocalCartFromLocalStorage();
+
+            //insert data
+            const { data: InsertOrderData, error: insertOrderError } = await supabaseClient
+                .from('pharmology_orders_table')
+                .insert([
+                    { user_id_column: user.id, order_items_column: cart },
+                ])
+                .select()
+
+        }
+
+        //add click event listener on document
+        document.addEventListener('click', function (event) {
+
+            //if event target is confirmer button
+            if (event.target.id === 'cartPageCheckoutDialogConfirmButtonId') {
+                    
+                    //call insertOrderDetails function
+                    insertOrderDetails();
+            }
+        })
     </script>
 </body>
 

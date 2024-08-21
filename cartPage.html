@@ -661,13 +661,16 @@
         }
 
         //add click event listener on document
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', async function (event) {
 
             //if event target is confirmer button
             if (event.target.id === 'cartPageCheckoutDialogConfirmButtonId') {
                     
                     //call insertOrderDetails function
-                    insertOrderDetails();
+                    await insertOrderDetails();
+
+                    //go to thank you page
+                    window.location.href = 'thankYouPage.html';
             }
         })
     </script>

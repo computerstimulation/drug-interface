@@ -1,6 +1,8 @@
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
-console.log('Resend API Key:', RESEND_API_KEY);
+//console.log('Resend API Key:', RESEND_API_KEY);
 
 const handler = async (request: Request): Promise<Response> => {
 
@@ -10,38 +12,89 @@ const handler = async (request: Request): Promise<Response> => {
     const webhookPayload = await request.json();  // Parse the incoming webhook payload
     console.log('webhook Payload:', JSON.stringify(webhookPayload, null, 2));
 
-    //convert webhook.Payload.record.order_items_column to string
-    // Assuming order_items_column is an array of objects
-    const items = webhookPayload.record.order_items_column.map((item: any) => {
+    const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-      // Format each item as a string, e.g., "Product Name: 2 x $10.00"
-      return `Product: ${item.name}, Quantity: ${item.quantity}`;
-    }).join('<br>');  // Join the items with line breaks for readability
+    //create suppliers object
+    let suppliers = {};
 
-    const res = await fetch('https://api.resend.com/emails', {
+    //use a for of loop to iterative over
+    for (let item of webhookPayload.record.order_items_column) {
+      console.log(`item: ${webhookPayload.record.order_items_column}`);
+
+      //query the database to get the product supplier name
+      let { data: pharmology_product_table, error } = await supabaseClient
+        .from('pharmology_product_table')
+        .select('product_supplier_column')
+        .eq('id', item.id)
+        .single();
+
+      //query the database to get the supplier email address
+      let { data: pharmology_supplier_profile_table, error: pharmology_supplier_profile_tableError } = await supabaseClient
+        .from('pharmology_supplier_profile_table')
+        .select('supplier_email_address_column')
+        .eq('supplier_name_column', pharmology_product_table.product_supplier_column)
+        .single();
+
+      //query the database to get the user's address
+      
+
+      console.log(`product (${item.name}) supplier retrieved from database: ${JSON.stringify(pharmology_product_table, null, 2)}`);
+      console.log(`supplier ${pharmology_product_table.product_supplier_column} email retrieved from database: ${JSON.stringify(pharmology_supplier_profile_table, null, 2)}`);
+
+      //assign the email to an object in the array in the suppliers object
+      item.email = pharmology_supplier_profile_table.supplier_email_address_column;
+      console.log(`product email: ${item.email}`);
+
+      //if suppliers does not have a key with the supplier name
+      if (!suppliers[pharmology_product_table.product_supplier_column]) {
+
+        //create a key in the suppliers object and assign it an empty array
+        suppliers[pharmology_product_table.product_supplier_column] = [];
+      }
+
+      //push the item to the relevant supplier key in the suppliers object
+      suppliers[pharmology_product_table.product_supplier_column].push(item);
+
+
+      console.log('Suppliers:', suppliers);
+    }
+
+    // Prepare the batch email payload
+    const emailBatch = Object.keys(suppliers).map(supplier => {
+      const orderDetails = suppliers[supplier].map(item => `
+            <p>Product: ${item.name}<br>
+            Quantity: ${item.quantity}</p>
+          `).join('');
+
+      return {
+        from: 'pharmology@premedia.pro',
+        to: `${suppliers[supplier][0].email}`,
+        subject: 'New Order',
+        html: `
+              <html>
+                <body>
+                  <h1>New Order Received</h1>
+                  <p>Dear ${supplier},</p>
+                  <p>We are pleased to inform you that you have received a new order. Please find the details of the order below:</p>
+                  ${orderDetails}
+                  <p>Thank you for your prompt attention to this order.</p>
+                  <p>Best regards,<br>Pharmology</p>
+                </body>
+              </html>
+            `,
+      };
+    });
+
+    //for every key in the suppliers object
+    const res = await fetch('https://api.resend.com/emails/batch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: 'pharmology@premedia.pro',
-        to: 'khabirhadi9@gmail.com',
-        subject: 'New Order',
-        html: `
-          <html>
-            <body>
-              <h1>New Order Received</h1>
-              <p>Dear Supplier,</p>
-              <p>We are pleased to inform you that you have received a new order. Please find the details of the order below:</p>
-              <p><strong>Order Details:</strong></p>
-              <div>${items}</div>
-              <p>Thank you for your prompt attention to this order.</p>
-              <p>Best regards,<br>Pharmology</p>
-            </body>
-          </html>
-      `,
-      }),
+      body: JSON.stringify(emailBatch),
     })
 
     const data = await res.json()

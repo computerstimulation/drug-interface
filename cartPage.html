@@ -665,12 +665,12 @@
 
             //if event target is confirmer button
             if (event.target.id === 'cartPageCheckoutDialogConfirmButtonId') {
-                    
-                    //call insertOrderDetails function
-                    await insertOrderDetails();
 
-                    //go to thank you page
-                    window.location.href = 'thankYouPage.html';
+                //call insertOrderDetails function
+                await insertOrderDetails();
+
+                //go to thank you page
+                window.location.href = 'thankYouPage.html';
             }
         })
     </script>

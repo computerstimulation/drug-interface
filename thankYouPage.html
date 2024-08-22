@@ -163,17 +163,17 @@
         //get the address information of the user from supabase on dom content loaded
         document.addEventListener('DOMContentLoaded', async function () {
 
-            let { data: user_address_table, error } = await supabaseClient
-                .from('user_address_table')
+            let { data: pharmology_user_address_table, error } = await supabaseClient
+                .from('pharmology_user_address_table')
                 .select('*')
 
             //add address details in spans after thankYouPageAddressTitleSpanClass
             document.querySelector('.thankYouPageAddressTitleSpanClass').insertAdjacentHTML('afterend', `
-                <span>${user_address_table[0].user_address_person_name_column}</span>
-                <span>${user_address_table[0].user_address_business_name_column}</span>
-                <span>${user_address_table[0].user_address_description_column}</span>
-                <span>${user_address_table[0].user_address_city_column}</span>
-                <span>${user_address_table[0].user_address_governorate_column}</span>
+                <span>${pharmology_user_address_table[0].user_address_person_name_column}</span>
+                <span>${pharmology_user_address_table[0].user_address_business_name_column}</span>
+                <span>${pharmology_user_address_table[0].user_address_description_column}</span>
+                <span>${pharmology_user_address_table[0].user_address_city_column}</span>
+                <span>${pharmology_user_address_table[0].user_address_governorate_column}</span>
                 `
             )
         });

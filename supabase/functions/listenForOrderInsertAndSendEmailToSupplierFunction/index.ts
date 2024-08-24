@@ -1,20 +1,32 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
+//initialize the supabase client
+const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
 //console.log('Resend API Key:', RESEND_API_KEY);
 
 const handler = async (request: Request): Promise<Response> => {
 
+  //get the webhook payload
+  const webhookPayload = await request.json();  // Parse the incoming webhook payload
+  console.log('webhook Payload:', JSON.stringify(webhookPayload, null, 2));
+
+  //get the shipping address of the order
+  //query the database to get the user's address
+  let { data: pharmology_user_address_table, error: pharmology_user_address_tableError } = await supabaseClient
+    .from('pharmology_user_address_table')
+    .select('*')
+    .eq('id', webhookPayload.record.user_id_column)
+    .single();
+
+  console.log(`user address: ${JSON.stringify(pharmology_user_address_table, null, 2)}`);
+
   //if request is post
   if (request.method === 'POST') {
-
-    const webhookPayload = await request.json();  // Parse the incoming webhook payload
-    console.log('webhook Payload:', JSON.stringify(webhookPayload, null, 2));
-
-    const supabaseUrl = 'https://oncciddxmwsqeafrugzb.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uY2NpZGR4bXdzcWVhZnJ1Z3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMyNzgwMDcsImV4cCI6MjAzODg1NDAwN30.Q3wPkVsca--mLplPPL7dnL1qZh_pSyuYxuuLBUQ-R44';
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     //create suppliers object
     let suppliers = {};
@@ -36,9 +48,6 @@ const handler = async (request: Request): Promise<Response> => {
         .select('supplier_email_address_column')
         .eq('supplier_name_column', pharmology_product_table.product_supplier_column)
         .single();
-
-      //query the database to get the user's address
-      
 
       console.log(`product (${item.name}) supplier retrieved from database: ${JSON.stringify(pharmology_product_table, null, 2)}`);
       console.log(`supplier ${pharmology_product_table.product_supplier_column} email retrieved from database: ${JSON.stringify(pharmology_supplier_profile_table, null, 2)}`);
@@ -68,6 +77,7 @@ const handler = async (request: Request): Promise<Response> => {
             Quantity: ${item.quantity}</p>
           `).join('');
 
+
       return {
         from: 'pharmology@premedia.pro',
         to: `${suppliers[supplier][0].email}`,
@@ -79,6 +89,13 @@ const handler = async (request: Request): Promise<Response> => {
                   <p>Dear ${supplier},</p>
                   <p>We are pleased to inform you that you have received a new order. Please find the details of the order below:</p>
                   ${orderDetails}
+                  <p>Shipping Address:<br>
+                  ${pharmology_user_address_table.user_address_person_name_column}<br>
+                  ${pharmology_user_address_table.user_address_business_name_column}<br>
+                  ${pharmology_user_address_table.user_address_description_column}<br>
+                  ${pharmology_user_address_table.user_address_city_column}<br>
+                  ${pharmology_user_address_table.user_address_governorate_column}<br>
+                  ${pharmology_user_address_table.user_phone_number_column.phone}</p>
                   <p>Thank you for your prompt attention to this order.</p>
                   <p>Best regards,<br>Pharmology</p>
                 </body>

@@ -77,7 +77,6 @@ const handler = async (request: Request): Promise<Response> => {
             Quantity: ${item.quantity}</p>
           `).join('');
 
-
       return {
         from: 'pharmology@premedia.pro',
         to: `${suppliers[supplier][0].email}`,
